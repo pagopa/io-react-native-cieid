@@ -12,8 +12,12 @@ const LINKING_ERROR =
   '- You are not using Expo Go\n';
 
 type IoReactNativeCieidProps = {
-  color: string;
   style: ViewStyle;
+  sp_url: string;
+  sp_url_scheme: string;
+  onCieIDAuthenticationCanceled?: () => void;
+  onCieIDAuthenticationSuccess?: () => void;
+  onCieIDAuthenticationError?: () => void;
 };
 
 const ComponentName = 'IoReactNativeCieidView';
