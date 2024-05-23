@@ -1,4 +1,4 @@
-# io-react-native-cieid
+# @pagopa/io-react-native-cieid 🪪
 
 ![CI workflow](https://github.com/pagopa/io-react-native-cieid/actions/workflows/ci.yml/badge.svg)
 
