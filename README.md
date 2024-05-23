@@ -1,21 +1,43 @@
 # io-react-native-cieid
 
-A bridge to add CieID auth on IO
+A React Native bridge to add CieID authentication on IO, it's based on [cieid-ios-sdk](https://github.com/IPZSMobileTeam/cieid-ios-sdk) and [cieid-android-sdk](https://github.com/IPZSMobileTeam/cieid-android-sdk)
+
+**NOTE: It is not production ready and can only be used with iOS (Android platform not yet implemented)**
 
 ## Installation
 
 ```sh
-npm install io-react-native-cieid
+// with npm
+npm install @pagopa/io-react-native-cieid
+
+// or if you use yarn
+yarn add @pagopa/io-react-native-cieid
 ```
 
 ## Usage
 
+- sp_url is - the URL of the federated service provider
+- sp_url_scheme - is the app bundle name to open (ex. it.ipzs.cieid)
+
 ```js
-import { IoReactNativeCieidView } from "io-react-native-cieid";
+import { IoReactNativeCieidView } from '@pagopa/io-react-native-cieid';
 
 // ...
 
-<IoReactNativeCieidView color="tomato" />
+<IoReactNativeCieidView
+  sp_url={'https://ios.idserver.servizicie.interno.gov.it/'}
+  sp_url_scheme={'it.ipzs.cieid'}
+  style={styles.container}
+  onCieIDAuthenticationCanceled={() =>
+    console.log('onCieIDAuthenticationCanceled')
+  }
+  onCieIDAuthenticationSuccess={() =>
+    console.log('onCieIDAuthenticationSuccess')
+  }
+  onCieIDAuthenticationError={() => console.log('onCieIDAuthenticationError')}
+/>;
+
+// ...
 ```
 
 ## Contributing
