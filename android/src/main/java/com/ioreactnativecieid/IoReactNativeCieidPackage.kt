@@ -12,6 +12,6 @@ class IoReactNativeCieidPackage : ReactPackage {
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return listOf(IoReactNativeCieidViewManager())
+    return listOf(IoReactNativeCieidViewManager(reactContext))
   }
 }
