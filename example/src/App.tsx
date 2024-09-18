@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { StyleSheet } from 'react-native';
-import { IoReactNativeCieidView } from 'io-react-native-cieid';
+import { IoReactNativeCieidView } from '@pagopa/io-react-native-cieid';
 
 export default function App() {
   return (

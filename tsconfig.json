@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "io-react-native-cieid": ["./src/index"]
+      "@pagopa/io-react-native-cieid": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
