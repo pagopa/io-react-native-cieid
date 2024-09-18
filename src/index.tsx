@@ -2,6 +2,7 @@ import {
   requireNativeComponent,
   UIManager,
   Platform,
+  NativeModules,
   type ViewStyle,
 } from 'react-native';
 
@@ -28,3 +29,18 @@ export const IoReactNativeCieidView =
     : () => {
         throw new Error(LINKING_ERROR);
       };
+
+const IoReactNativeCieidModule = NativeModules.IoReactNativeCieidModule
+  ? NativeModules.IoReactNativeCieidModule
+  : new Proxy(
+      {},
+      {
+        get() {
+          throw new Error(LINKING_ERROR);
+        },
+      }
+    );
+
+export function multiply(a: number, b: number): Promise<number> {
+  return IoReactNativeCieidModule.multiply(a, b);
+}
