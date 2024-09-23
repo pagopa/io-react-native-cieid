@@ -1,2 +1,3 @@
-- @pagopa/io-wallet
-- @pagopa/io-app
+# see https://help.github.com/en/articles/about-code-owners#example-of-a-codeowners-file
+
+* @pagopa/io-app @pagopa/io-wallet

@@ -14,11 +14,11 @@ PODS:
   - hermes-engine (0.73.6):
     - hermes-engine/Pre-built (= 0.73.6)
   - hermes-engine/Pre-built (0.73.6)
-  - io-react-native-cieid (0.1.0):
+  - libevent (2.1.12)
+  - pagopa-io-react-native-cieid (0.1.0):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - libevent (2.1.12)
   - RCT-Folly (2022.05.16.00):
     - boost
     - DoubleConversion
@@ -1067,8 +1067,8 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - io-react-native-cieid (from `../..`)
   - libevent (~> 2.1.12)
+  - pagopa-io-react-native-cieid (from `../..`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -1134,7 +1134,7 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2024-02-20-RNv0.73.5-18f99ace4213052c5e7cdbcd39ee9766cd5df7e4
-  io-react-native-cieid:
+  pagopa-io-react-native-cieid:
     :path: "../.."
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
@@ -1229,8 +1229,8 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: 9cecf9953a681df7556b8cc9c74905de8f3293c0
-  io-react-native-cieid: 06223ebeac24b0ffb5c27bf2b38ec84f2b7359c8
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  pagopa-io-react-native-cieid: 472906d3b02a15ac65f94495d9a3f3c67964413f
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: ca1d7414aba0b27efcfa2ccd37637edb1ab77d96
   RCTTypeSafety: 678e344fb976ff98343ca61dc62e151f3a042292
