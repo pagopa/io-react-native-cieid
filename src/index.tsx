@@ -44,3 +44,30 @@ const IoReactNativeCieidModule = NativeModules.IoReactNativeCieidModule
 export function multiply(a: number, b: number): Promise<number> {
   return IoReactNativeCieidModule.multiply(a, b);
 }
+
+/**
+ * Check if the CIEID app is installed on the device.
+ * This method is useful to check if the app is installed before trying to open it.
+ * The package name is 'it.ipzs.cieid' for production environment
+ * and 'it.ipzs.cieid.collaudo' for UAT environment.
+ * @example
+ * ```typescript
+ * import { isCieIdAvailable } from '@pagopa/io-react-native-cieid';
+ * const isInstalled = isCieIdAvailable();
+ * ```
+ * WARNING: This is available only on Android, calling it on iOS will throw an error.
+ *
+ * @param packageName The package name of the CIEID app to check.
+ * It defaults to 'it.ipzs.cieid'.
+ * In case of UAT environment, the package name is 'it.ipzs.cieid.collaudo'.
+ * If you need to check for a different package name, pass it as argument.
+ * @returns true if the app is installed, false otherwise.
+ */
+export function isCieIdAvailable(
+  packageName: string = 'it.ipzs.cieid'
+): boolean {
+  if (Platform.OS === 'ios') {
+    throw new Error('isCieIdAvailable is not available on iOS');
+  }
+  return IoReactNativeCieidModule.isAppInstalled(packageName);
+}

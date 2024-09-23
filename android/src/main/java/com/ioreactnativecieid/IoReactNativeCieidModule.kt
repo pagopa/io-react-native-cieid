@@ -1,5 +1,6 @@
 package com.ioreactnativecieid
 
+import android.content.pm.PackageManager
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -12,11 +13,12 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
     return NAME
   }
 
-  // Example method
-  // See https://reactnative.dev/docs/native-modules-android
-  @ReactMethod
-  fun multiply(a: Double, b: Double, promise: Promise) {
-    promise.resolve(a * b)
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  fun isAppInstalled(packageName: String) = try {
+    reactApplicationContext.packageManager.getPackageInfo(packageName, 0)
+    true
+  } catch (e: PackageManager.NameNotFoundException) {
+    false
   }
 
   companion object {
