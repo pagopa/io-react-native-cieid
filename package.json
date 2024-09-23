@@ -1,6 +1,6 @@
 {
   "name": "@pagopa/io-react-native-cieid",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A bridge to add CieID auth on IO",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -153,7 +153,7 @@
         }
       ]
     ]
-  },  
+  },
   "auto-changelog": {
     "issuePattern": "[A-Z]+-\\d+",
     "issueUrl": "https://pagopa.atlassian.net/browse/{id}",
