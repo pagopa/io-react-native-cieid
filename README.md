@@ -1,7 +1,5 @@
 # @pagopa/io-react-native-cieid 🪪
 
-![CI workflow](https://github.com/pagopa/io-react-native-cieid/actions/workflows/ci.yml/badge.svg)
-
 A React Native bridge to add CieID authentication on IO, it's based on [cieid-ios-sdk](https://github.com/IPZSMobileTeam/cieid-ios-sdk) and [cieid-android-sdk](https://github.com/IPZSMobileTeam/cieid-android-sdk)
 
 **NOTE: It is not production ready and can only be used with iOS (Android platform not yet implemented)**
