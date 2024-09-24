@@ -80,7 +80,8 @@ export type CieIdPackageNameOrCustomUrl =
  *
  * For iOS, the URL scheme is always `CIEID://` for both production and UAT environment.
  *
- * WARNING: For this to work it is necessary to add the URL scheme to the `Info.plist` file of the calling app.
+ * WARNING: For this to work it is necessary to add the URL scheme to the `Info.plist`
+ * file of the calling app, under the `LSApplicationQueriesSchemes` key.
  *
  * ```xml
  * <key>LSApplicationQueriesSchemes</key>
