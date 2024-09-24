@@ -12,40 +12,31 @@ import {
 import {
   IoReactNativeCieidView,
   isCieIdAvailable,
-  multiply,
 } from '@pagopa/io-react-native-cieid';
 
 export default function App() {
-  React.useEffect(() => {
-    const platformName = Platform.OS;
-    const message = `${platformName} - Test multiply 3 * 7 =`;
-    multiply(3, 7)
-      .then((r) => {
-        console.log(message, r);
-      })
-      .catch((e) => {
-        console.error(message, e);
-      });
-  }, []);
-
-  const iOSComponent = (
-    <IoReactNativeCieidView
-      sp_url={'https://ios.idserver.servizicie.interno.gov.it/'}
-      sp_url_scheme={'it.ipzs.cieid'}
-      style={styles.container}
-      onCieIDAuthenticationCanceled={() =>
-        console.log('onCieIDAuthenticationCanceled')
-      }
-      onCieIDAuthenticationSuccess={() =>
-        console.log('onCieIDAuthenticationSuccess')
-      }
-      onCieIDAuthenticationError={() =>
-        console.log('onCieIDAuthenticationError')
-      }
-    />
+  const useOnlyNativeModules = true;
+  const iOSComponent = React.useMemo(
+    () => (
+      <IoReactNativeCieidView
+        sp_url={'https://ios.idserver.servizicie.interno.gov.it/'}
+        sp_url_scheme={'it.ipzs.cieid'}
+        style={styles.container}
+        onCieIDAuthenticationCanceled={() =>
+          console.log('onCieIDAuthenticationCanceled')
+        }
+        onCieIDAuthenticationSuccess={() =>
+          console.log('onCieIDAuthenticationSuccess')
+        }
+        onCieIDAuthenticationError={() =>
+          console.log('onCieIDAuthenticationError')
+        }
+      />
+    ),
+    []
   );
 
-  const androidComponent = (
+  const nativeModuleComponent = (
     <SafeAreaView style={styles.androidContainer}>
       <View>
         <Text style={styles.title}>
@@ -56,7 +47,7 @@ export default function App() {
           onPress={() => {
             Alert.alert(
               'CIEID app is installed',
-              isCieIdAvailable('it.ipzs.cieid') ? 'Yes ✅' : 'No ❌'
+              isCieIdAvailable() ? 'Yes ✅' : 'No ❌'
             );
           }}
         />
@@ -73,7 +64,7 @@ export default function App() {
           onPress={() =>
             Alert.alert(
               'CIEID UAT 🧪 app is installed',
-              isCieIdAvailable('it.ipzs.cieid.collaudo') ? 'Yes ✅' : 'No ❌'
+              isCieIdAvailable(true) ? 'Yes ✅' : 'No ❌'
             )
           }
         />
@@ -82,8 +73,8 @@ export default function App() {
   );
 
   return Platform.select({
-    ios: iOSComponent,
-    default: androidComponent,
+    ios: useOnlyNativeModules ? nativeModuleComponent : iOSComponent,
+    default: nativeModuleComponent,
   });
 }
 

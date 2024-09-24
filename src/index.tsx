@@ -41,33 +41,70 @@ const IoReactNativeCieidModule = NativeModules.IoReactNativeCieidModule
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return IoReactNativeCieidModule.multiply(a, b);
-}
+export type AndroidCiedIdPackageName =
+  | 'it.ipzs.cieid'
+  | 'it.ipzs.cieid.collaudo';
+export type IosCieIdUrlScheme = 'CIEID://';
+export type CieIdPackageNameOrCustomUrl =
+  | AndroidCiedIdPackageName
+  | IosCieIdUrlScheme;
 
 /**
- * Check if the CIEID app is installed on the device.
+ * Check if the CieID app is installed on the device.
  * This method is useful to check if the app is installed before trying to open it.
- * The package name is 'it.ipzs.cieid' for production environment
- * and 'it.ipzs.cieid.collaudo' for UAT environment.
+ *
+ * **Android**:
+ * This method masquerades the package name of the CieID app
+ * because of the new visibility restrictions on Android 11 which prevent
+ * an app from querying the package manager for the list of installed apps,
+ * unless the calling app doesn't expose this interaction by providing the package name
+ * in the manifest file, inside the queries element.
+ *
+ * __For that reason__ the package name is not meant to be passed as argument.
+ *
+ * ```xml
+ * <!-- https://developer.android.com/training/package-visibility/declaring -->
+ * <queries>
+ *   <package android:name="it.ipzs.cieid" />
+ *   <package android:name="it.ipzs.cieid.collaudo" />
+ * </queries>
+ * ```
+ * This module only exposes the package name of the CieID app for the production environment
+ * and the UAT environment.
+ * The package name is `'it.ipzs.cieid'` for production environment
+ * and `'it.ipzs.cieid.collaudo'` for UAT environment.
+ *
+ * **iOS:**
+ * For iOS platform, the package name is not needed, but this method check if the system
+ * is able to open the URL scheme of the CieID app (`CIEID://`).
+ *
+ * For iOS, the URL scheme is always `CIEID://` for both production and UAT environment.
+ *
+ * WARNING: For this to work it is necessary to add the URL scheme to the `Info.plist` file of the calling app.
+ *
+ * ```xml
+ * <key>LSApplicationQueriesSchemes</key>
+ * <array>
+ *  <string>CIEID</string>
+ * </array>
+ * ```
+ *
  * @example
  * ```typescript
  * import { isCieIdAvailable } from '@pagopa/io-react-native-cieid';
  * const isInstalled = isCieIdAvailable();
  * ```
- * WARNING: This is available only on Android, calling it on iOS will throw an error.
  *
- * @param packageName The package name of the CIEID app to check.
- * It defaults to 'it.ipzs.cieid'.
- * In case of UAT environment, the package name is 'it.ipzs.cieid.collaudo'.
- * If you need to check for a different package name, pass it as argument.
- * @returns true if the app is installed, false otherwise.
+ * @param isUatEnvironment - Optional. Default is `false`.
+ *
+ * If `true`, it checks for the UAT environment package name.
+ *
+ * @returns `true` if the CieID app is installed, `false` otherwise.
  */
-export function isCieIdAvailable(
-  packageName: string = 'it.ipzs.cieid'
-): boolean {
-  if (Platform.OS === 'ios') {
-    throw new Error('isCieIdAvailable is not available on iOS');
-  }
-  return IoReactNativeCieidModule.isAppInstalled(packageName);
+export function isCieIdAvailable(isUatEnvironment: boolean = false): boolean {
+  const cieIdPackageNameOrCustomUrl = Platform.select({
+    ios: 'CIEID',
+    default: isUatEnvironment ? 'it.ipzs.cieid.collaudo' : 'it.ipzs.cieid',
+  });
+  return IoReactNativeCieidModule.isAppInstalled(cieIdPackageNameOrCustomUrl);
 }
