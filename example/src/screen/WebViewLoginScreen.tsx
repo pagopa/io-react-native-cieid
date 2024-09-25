@@ -47,6 +47,7 @@ export const WebViewLogin = () => {
   const [authenticatedUrl, setAuthenticatedUrl] = React.useState<string | null>(
     null
   );
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
   const navigation = useNavigation();
 
@@ -106,6 +107,7 @@ export const WebViewLogin = () => {
     <SafeAreaView style={styles.container}>
       <WebView
         ref={webView}
+        startInLoadingState={true}
         userAgent={defaultUserAgent}
         javaScriptEnabled={true}
         originWhitelist={originSchemasWhiteList}
