@@ -11,8 +11,9 @@ import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+
+typealias ME = IoReactNativeCieidModule.Companion.ModuleException
 
 class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext), ActivityEventListener {
@@ -26,7 +27,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   override fun getName() = NAME
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  fun isAppInstalled(packageName: String) = try {
+  fun isAppInstalled(packageName: String): Boolean = try {
     reactApplicationContext.packageManager.getPackageInfo(packageName, 0)
     true
   } catch (e: PackageManager.NameNotFoundException) {
@@ -40,8 +41,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
     url: String,
     resultCallback: Callback
   ) {
-    val activity = currentActivity
-    activity?.let {
+    currentActivity?.let { activity ->
       val intent = Intent().apply {
         setClassName(packageName, className)
         data = Uri.parse(url)
@@ -53,14 +53,15 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
         onActivityResultCallback = resultCallback
       } catch (anfEx: ActivityNotFoundException) {
         onActivityResultCallback = null
-        ModuleException.CIEID_ACTIVITY_IS_NULL.invoke(
+        ME.CIEID_ACTIVITY_IS_NULL.invoke(
           resultCallback,
-          Pair(anfEx.javaClass.name, anfEx.message ?: "")
+          "Exception" to anfEx.javaClass.name,
+          "Message" to (anfEx.message ?: "")
         )
       }
-    } ?: {
+    } ?: run {
       onActivityResultCallback = null
-      ModuleException.REACT_ACTIVITY_IS_NULL.invoke(resultCallback)
+      ME.REACT_ACTIVITY_IS_NULL.invoke(resultCallback)
     }
   }
 
@@ -72,32 +73,32 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   ) {
     when (resultCode) {
       Activity.RESULT_OK -> {
-        val url: String? = data?.getStringExtra("URL")
-        url.takeIf { maybeUrl -> !maybeUrl.isNullOrEmpty() }?.let { validUrl ->
-          onActivityResultCallback?.invoke("URL", validUrl)
-        } ?: {
-          data?.getIntExtra("ERROR", 0)?.let { errorId ->
-            val errorMap = mapOf(
-              RedirectionError.GENERIC_ERROR.code to ModuleException.GENERIC_ERROR,
-              RedirectionError.CIE_NOT_REGISTERED.code to ModuleException.CIE_NOT_REGISTERED,
-              RedirectionError.AUTHENTICATION_ERROR.code to ModuleException.AUTHENTICATION_ERROR,
-              RedirectionError.NO_SECURE_DEVICE.code to ModuleException.NO_SECURE_DEVICE
-            )
-
-            errorMap[errorId]?.invoke(onActivityResultCallback)
-          } ?: ModuleException.CIEID_EMPTY_URL_AND_ERROR_EXTRAS.invoke(onActivityResultCallback)
+        val url = data?.getStringExtra("URL")
+        if (!url.isNullOrEmpty()) {
+          onActivityResultCallback?.invoke("URL", url)
+        } else {
+          val errorId = data?.getIntExtra("ERROR", 0)
+          val errorMap = mapOf(
+            RedirectionError.GENERIC_ERROR.code to ME.GENERIC_ERROR,
+            RedirectionError.CIE_NOT_REGISTERED.code to ME.CIE_NOT_REGISTERED,
+            RedirectionError.AUTHENTICATION_ERROR.code to ME.AUTHENTICATION_ERROR,
+            RedirectionError.NO_SECURE_DEVICE.code to ME.NO_SECURE_DEVICE
+          )
+          errorMap[errorId]?.invoke(onActivityResultCallback)
+            ?: ME.CIEID_EMPTY_URL_AND_ERROR_EXTRAS.invoke(onActivityResultCallback)
         }
       }
+
       Activity.RESULT_CANCELED -> {
-        ModuleException.CIEID_OPERATION_CANCEL.invoke(onActivityResultCallback)
+        ME.CIEID_OPERATION_CANCEL.invoke(onActivityResultCallback)
       }
+
       else -> {
-        ModuleException.CIEID_OPERATION_NOT_SUCCESSFUL.invoke(onActivityResultCallback)
+        ME.CIEID_OPERATION_NOT_SUCCESSFUL.invoke(onActivityResultCallback)
       }
     }
     onActivityResultCallback = null
   }
-
 
   override fun onNewIntent(intent: Intent?) {
     // We do not expect add any data handling here,
@@ -108,9 +109,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   companion object {
     const val NAME = "IoReactNativeCieidModule"
 
-    private enum class ModuleException(
-      val ex: Exception
-    ) {
+    enum class ModuleException(private val ex: Exception) {
       GENERIC_ERROR(Exception("GENERIC_ERROR")),
       REACT_ACTIVITY_IS_NULL(Exception("REACT_ACTIVITY_IS_NULL")),
       CIEID_ACTIVITY_IS_NULL(Exception("CIEID_ACTIVITY_IS_NULL")),
@@ -122,18 +121,11 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       CIEID_OPERATION_NOT_SUCCESSFUL(Exception("CIEID_OPERATION_NOT_SUCCESSFUL")),
       UNKNOWN_EXCEPTION(Exception("UNKNOWN_EXCEPTION"));
 
-      fun invoke(
-        callback: Callback?, vararg args: Pair<String, String>
-      ) {
-        exMap(*args).let {
-          callback?.invoke("ERROR", it.first, it.second)
+      fun invoke(callback: Callback?, vararg args: Pair<String, String>) {
+        val writableMap = WritableNativeMap().apply {
+          args.forEach { putString(it.first, it.second) }
         }
-      }
-
-      private fun exMap(vararg args: Pair<String, String>): Pair<String, WritableMap> {
-        val writableMap = WritableNativeMap()
-        args.forEach { writableMap.putString(it.first, it.second) }
-        return Pair(this.ex.message ?: "UNKNOWN", writableMap)
+        callback?.invoke("ERROR", ex.message ?: "UNKNOWN", writableMap)
       }
     }
   }
