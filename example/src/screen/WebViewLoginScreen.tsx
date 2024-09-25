@@ -47,7 +47,6 @@ export const WebViewLogin = () => {
   const [authenticatedUrl, setAuthenticatedUrl] = React.useState<string | null>(
     null
   );
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
   const navigation = useNavigation();
 
