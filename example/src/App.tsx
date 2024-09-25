@@ -11,6 +11,7 @@ import {
 import {
   IoReactNativeCieidView,
   isCieIdAvailable,
+  openCieIdApp,
 } from '@pagopa/io-react-native-cieid';
 import { NavigationContainer } from '@react-navigation/native';
 import {
@@ -63,7 +64,7 @@ const NativeModule = () => (
   <SafeAreaView style={styles.androidContainer}>
     <View>
       <Text style={styles.title}>
-        Test if the CIEID app is installed on the device.
+        Test if the CieID app is installed on the device.
       </Text>
       <Button
         title="Press me"
@@ -78,7 +79,7 @@ const NativeModule = () => (
     <View style={styles.separator} />
     <View>
       <Text style={styles.title}>
-        Test if the CIEID app pointing to UAT environment is installed on the
+        Test if the CieID app pointing to UAT environment is installed on the
         device.
       </Text>
       <Button
@@ -88,6 +89,26 @@ const NativeModule = () => (
           Alert.alert(
             'CIEID UAT 🧪 app is installed',
             isCieIdAvailable(true) ? 'Yes ✅' : 'No ❌'
+          )
+        }
+      />
+    </View>
+    <View style={styles.separator} />
+    <View>
+      <Text style={styles.title}>Test CieID Opening (production)</Text>
+      <Button
+        title="Press me"
+        color="#00ee66"
+        onPress={() =>
+          openCieIdApp(
+            'https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=...&SPLogo=...&value=e1s2',
+            (id, result, userInfo) => {
+              if (id === 'ERROR') {
+                console.error(id, result, JSON.stringify(userInfo, null, 2));
+              } else {
+                console.log(id, result);
+              }
+            }
           )
         }
       />

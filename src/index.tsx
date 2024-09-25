@@ -109,3 +109,39 @@ export function isCieIdAvailable(isUatEnvironment: boolean = false): boolean {
   });
   return IoReactNativeCieidModule.isAppInstalled(cieIdPackageNameOrCustomUrl);
 }
+
+export type CieIdModuleErrorCodes =
+  | 'GENERIC_ERROR'
+  | 'REACT_ACTIVITY_IS_NULL'
+  | 'CIEID_ACTIVITY_IS_NULL'
+  | 'CIEID_INVALID_URL'
+  | 'UNKNOWN_EXCEPTION';
+
+export type CieIdReturnId = 'URL' | 'ERROR';
+export type CieIdModuleResult = CieIdModuleErrorCodes | string;
+export type CieIdUserInfo = Record<string, string>;
+
+export function openCieIdApp(
+  forwardUrl: string,
+  callback: (
+    resultId: CieIdReturnId,
+    result: CieIdModuleResult,
+    userInfo?: CieIdUserInfo
+  ) => void,
+  isUatEnvironment: boolean = false
+) {
+  if (Platform.OS === 'ios') {
+    throw new Error(
+      'openCieIdApp is not available on iOS. Use Linking.openURL instead.'
+    );
+  }
+  const cieIdPackageNameOrCustomUrl = isUatEnvironment
+    ? 'it.ipzs.cieid.collaudo'
+    : 'it.ipzs.cieid';
+  return IoReactNativeCieidModule.launchCieIdForResult(
+    cieIdPackageNameOrCustomUrl,
+    'it.ipzs.cieid.BaseActivity',
+    forwardUrl,
+    callback
+  );
+}
