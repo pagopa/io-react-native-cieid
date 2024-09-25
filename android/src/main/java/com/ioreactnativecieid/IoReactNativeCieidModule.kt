@@ -11,7 +11,9 @@ import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import org.json.JSONObject
 
 typealias ME = IoReactNativeCieidModule.Companion.ModuleException
 
@@ -73,11 +75,14 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   ) {
     when (resultCode) {
       Activity.RESULT_OK -> {
-        val url = data?.getStringExtra("URL")
+        val url = data?.getStringExtra(ReturnType.URL.toString())
         if (!url.isNullOrEmpty()) {
-          onActivityResultCallback?.invoke("URL", url)
+          onActivityResultCallback?.invoke(JSONObject().apply {
+            put("id", ReturnType.URL.toString())
+            put("url", url)
+          }.toString())
         } else {
-          val errorId = data?.getIntExtra("ERROR", 0)
+          val errorId = data?.getIntExtra(ReturnType.ERROR.toString(), 0)
           val errorMap = mapOf(
             RedirectionError.GENERIC_ERROR.code to ME.GENERIC_ERROR,
             RedirectionError.CIE_NOT_REGISTERED.code to ME.CIE_NOT_REGISTERED,
@@ -109,6 +114,11 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   companion object {
     const val NAME = "IoReactNativeCieidModule"
 
+    enum class ReturnType {
+      ERROR,
+      URL
+    }
+
     enum class ModuleException(private val ex: Exception) {
       GENERIC_ERROR(Exception("GENERIC_ERROR")),
       REACT_ACTIVITY_IS_NULL(Exception("REACT_ACTIVITY_IS_NULL")),
@@ -125,7 +135,12 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
         val writableMap = WritableNativeMap().apply {
           args.forEach { putString(it.first, it.second) }
         }
-        callback?.invoke("ERROR", ex.message ?: "UNKNOWN", writableMap)
+        val returnObject = JSONObject().apply {
+          put("id", ReturnType.ERROR.toString())
+          put("code", ex.message ?: "UNKNOWN")
+          put("userInfo", writableMap)
+        }.toString()
+        callback?.invoke(returnObject)
       }
     }
   }

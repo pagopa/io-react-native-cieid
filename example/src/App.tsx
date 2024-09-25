@@ -102,11 +102,11 @@ const NativeModule = () => (
         onPress={() =>
           openCieIdApp(
             'https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=...&SPLogo=...&value=e1s2',
-            (id, result, userInfo) => {
-              if (id === 'ERROR') {
-                console.error(id, result, JSON.stringify(userInfo, null, 2));
+            (result) => {
+              if (result.id === 'ERROR') {
+                console.error(JSON.stringify(result, null, 2));
               } else {
-                console.log(id, result);
+                console.log(result.id, result.url);
               }
             }
           )
@@ -122,11 +122,11 @@ const NativeModule = () => (
         onPress={() =>
           openCieIdApp(
             'https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=...&SPLogo=...&value=e1s2',
-            (id, result, userInfo) => {
-              if (id === 'ERROR') {
-                console.error(id, result, JSON.stringify(userInfo, null, 2));
+            (result) => {
+              if (result.id === 'ERROR') {
+                console.error(JSON.stringify(result, null, 2));
               } else {
-                console.log(id, result);
+                console.log(result.id, result.url);
               }
             },
             true

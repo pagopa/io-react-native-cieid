@@ -117,17 +117,21 @@ export type CieIdModuleErrorCodes =
   | 'CIEID_INVALID_URL'
   | 'UNKNOWN_EXCEPTION';
 
-export type CieIdReturnId = 'URL' | 'ERROR';
-export type CieIdModuleResult = CieIdModuleErrorCodes | string;
-export type CieIdUserInfo = Record<string, string>;
+export type CieIdErrorResult = {
+  id: 'ERROR';
+  code: CieIdModuleErrorCodes;
+  userInfo?: Record<string, string>;
+};
+export type CieIdSuccessResult = {
+  id: 'URL';
+  url: string;
+};
+
+export type CieIdReturnType = CieIdErrorResult | CieIdSuccessResult;
 
 export function openCieIdApp(
   forwardUrl: string,
-  callback: (
-    resultId: CieIdReturnId,
-    result: CieIdModuleResult,
-    userInfo?: CieIdUserInfo
-  ) => void,
+  callback: (result: CieIdReturnType) => void,
   isUatEnvironment: boolean = false
 ) {
   if (Platform.OS === 'ios') {
@@ -142,6 +146,16 @@ export function openCieIdApp(
     cieIdPackageNameOrCustomUrl,
     'it.ipzs.cieid.BaseActivity',
     forwardUrl,
-    callback
+    (result: string) => {
+      try {
+        callback(JSON.parse(result));
+      } catch (error) {
+        callback({
+          id: 'ERROR',
+          code: 'UNKNOWN_EXCEPTION',
+          userInfo: { message: `Unable to parse return type ${result}` },
+        });
+      }
+    }
   );
 }
