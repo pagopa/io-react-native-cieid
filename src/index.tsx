@@ -146,16 +146,6 @@ export function openCieIdApp(
     cieIdPackageNameOrCustomUrl,
     'it.ipzs.cieid.BaseActivity',
     forwardUrl,
-    (result: string) => {
-      try {
-        callback(JSON.parse(result));
-      } catch (error) {
-        callback({
-          id: 'ERROR',
-          code: 'UNKNOWN_EXCEPTION',
-          userInfo: { message: `Unable to parse return type ${result}` },
-        });
-      }
-    }
+    callback
   );
 }

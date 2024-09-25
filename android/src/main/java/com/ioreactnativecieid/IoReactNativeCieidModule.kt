@@ -77,10 +77,10 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       Activity.RESULT_OK -> {
         val url = data?.getStringExtra(ReturnType.URL.toString())
         if (!url.isNullOrEmpty()) {
-          onActivityResultCallback?.invoke(JSONObject().apply {
-            put("id", ReturnType.URL.toString())
-            put("url", url)
-          }.toString())
+          onActivityResultCallback?.invoke(WritableNativeMap().apply {
+            putString("id", ReturnType.URL.toString())
+            putString("url", url)
+          })
         } else {
           val errorId = data?.getIntExtra(ReturnType.ERROR.toString(), 0)
           val errorMap = mapOf(
@@ -135,11 +135,11 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
         val writableMap = WritableNativeMap().apply {
           args.forEach { putString(it.first, it.second) }
         }
-        val returnObject = JSONObject().apply {
-          put("id", ReturnType.ERROR.toString())
-          put("code", ex.message ?: "UNKNOWN")
-          put("userInfo", writableMap)
-        }.toString()
+        val returnObject = WritableNativeMap().apply {
+          putString("id", ReturnType.ERROR.toString())
+          putString("code", ex.message ?: "UNKNOWN")
+          putMap("userInfo", writableMap)
+        }
         callback?.invoke(returnObject)
       }
     }
