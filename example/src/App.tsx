@@ -5,6 +5,7 @@ import { Stack } from './navigation';
 import { HomeScreen } from './screen/HomeScreen';
 import { NativeModule } from './screen/NativeModuleScreen';
 import { NativeView } from './screen/NativeViewScreen';
+import { WebViewLogin } from './screen/WebViewLoginScreen';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         />
         <Stack.Screen name="NativeModule" component={NativeModule} />
         <Stack.Screen name="NativeView" component={NativeView} />
+        <Stack.Screen name="WebViewLogin" component={WebViewLogin} />
       </Stack.Navigator>
     </NavigationContainer>
   );

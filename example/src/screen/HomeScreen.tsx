@@ -34,6 +34,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           onPress={() => navigation.navigate('NativeView')}
         />
       </View>
+      <View style={styles.separator} />
+      <View>
+        <Text style={styles.title}>Test CieId production login</Text>
+        <Button
+          title="Test CieId Login"
+          // nice fluo color
+          color="#00ee66"
+          onPress={() => navigation.navigate('WebViewLogin')}
+        />
+      </View>
     </SafeAreaView>
   );
 };
