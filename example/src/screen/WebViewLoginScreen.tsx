@@ -25,6 +25,24 @@ const serviceProviderUrl =
   'https://app-backend.io.italia.it/login?entityID=xx_servizicie&authLevel=SpidL2';
 
 export const WebViewLogin = () => {
+  React.useEffect(() => {
+    // https://reactnative.dev/docs/linking#open-links-and-deep-links-universal-links
+    Linking.addEventListener('url', ({ url }) => {
+      console.log('-- -->URL from Deep Liking', url);
+      // if the url is of this format: iologincie:https://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2
+      // extract the part after iologincie: and dispatch the action to handle the login
+      if (url.startsWith('iologincie:')) {
+        const continueUrl = url.split('iologincie:')[1];
+        if (continueUrl) {
+          console.log('-- --> iOS continue URL', continueUrl);
+          setAuthenticatedUrl(continueUrl);
+        }
+      }
+    });
+
+    return () => Linking.removeAllListeners('url');
+  }, []);
+
   const webView = React.useRef<WebView>(null);
   const [authenticatedUrl, setAuthenticatedUrl] = React.useState<string | null>(
     null
@@ -61,12 +79,13 @@ export const WebViewLogin = () => {
       if (Platform.OS === 'ios') {
         const urlForCieId = `CIEID://${url}&sourceApp=iologincie`;
         console.log('---- --> iOS forward URL: ', url, urlForCieId);
-        Linking.openURL(urlForCieId).catch((err) =>
+        Linking.openURL(urlForCieId).catch((err) => {
           console.error(
             '---- --> (App CieID not installed?) An error occurred',
             err
-          )
-        );
+          );
+          navigation.goBack();
+        });
       } else {
         openCieIdApp(url, (result) => {
           if (result.id === 'ERROR') {
