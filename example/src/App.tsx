@@ -113,6 +113,27 @@ const NativeModule = () => (
         }
       />
     </View>
+    <View style={styles.separator} />
+    <View>
+      <Text style={styles.title}>Test CieID Opening (UAT)</Text>
+      <Button
+        title="Press me"
+        color="#ee6600"
+        onPress={() =>
+          openCieIdApp(
+            'https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=...&SPLogo=...&value=e1s2',
+            (id, result, userInfo) => {
+              if (id === 'ERROR') {
+                console.error(id, result, JSON.stringify(userInfo, null, 2));
+              } else {
+                console.log(id, result);
+              }
+            },
+            true
+          )
+        }
+      />
+    </View>
   </SafeAreaView>
 );
 
