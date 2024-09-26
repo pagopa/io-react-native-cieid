@@ -51,11 +51,11 @@ const isUatInstalled = isCieIdAvailable(true);
 
 **Parameters**:
 
-- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. If true, it checks for the UAT environment package name.
+- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. If `true`, it checks for the UAT environment package name.
 
 **Returns**:
 
-- `boolean`: Returns true if the CieID app is installed, false otherwise.
+- `boolean`: Returns `true` if the CieID app is installed, false otherwise.
 
 <hr/>
 
@@ -83,12 +83,12 @@ openCieIdApp('https://your-app.com/auth-callback', (result) => {
 
 - `forwardUrl` _(string)_: The `URL` that the CieID app will use to continue the authentication process.
 - `callback` _(function)_: A callback function that receives the result of the operation either success or failure.
-- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. Tells the method to use the UAT environment package name instead of the production one, and to change the service provider IdP id from `'xx_servizicie'` to `'xx_servizicie_coll'`
+- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. Tells the method to use the UAT environment package name `'it.ipzs.cieid.collaudo'` instead of the production one `'it.ipzs.cieid'`, and to change the service provider IdP id from `'xx_servizicie'` to `'xx_servizicie_coll'`
 
 **Returns**:
 
-- On **success**, the callback will receive an object with the id property set to `'URL'` and a `url` property containing the returned `URL`.
-- On **failure**, the callback will receive an object with the id property set to `'ERROR'` and a `code` property containing one of the error codes from the `CieIdModuleErrorCodes` type.
+- On **success**, the callback will receive an object with the `id` property set to `'URL'` and a `url` property containing the returned `URL`.
+- On **failure**, the callback will receive an object with the `id` property set to `'ERROR'` and a `code` property containing one of the error codes from the `CieIdModuleErrorCodes` type.
 
 #### Android:
 
@@ -103,7 +103,9 @@ In case you need to open the CieID app on iOS, you can use the following code:
 ```ts
 import { Linking } from 'react-native';
 
-Linking.openURL('CIEID://...');
+Linking.openURL(urlForCieId).catch((err) => {
+  console.error('---- --> (App CieID not installed?) An error occurred', err);
+});
 ```
 
 Be aware to subscribe to the `url` event in your app to handle the CieID app callback.
