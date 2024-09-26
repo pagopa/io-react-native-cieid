@@ -26,7 +26,7 @@ Due to Android 11's package visibility restrictions, apps need to declare the pa
 
 #### iOS:
 
-To check if the CieID app can be opened via its URL scheme, you need to declare the URL scheme in your `Info.plist` file.
+To check if the CieID app can be opened via its `URL` scheme, you need to declare the URL scheme in your `Info.plist` file.
 
 Add the following to your `Info.plist`:
 
@@ -81,9 +81,9 @@ openCieIdApp('https://your-app.com/auth-callback', (result) => {
 
 **Parameters**:
 
-- `forwardUrl` _(string)_: The URL that the CieID app will use to continue the authentication process.
+- `forwardUrl` _(string)_: The `URL` that the CieID app will use to continue the authentication process.
 - `callback` _(function)_: A callback function that receives the result of the operation either success or failure.
-- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. Tells the method to use the UAT environment package name instead of the production one.
+- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. Tells the method to use the UAT environment package name instead of the production one, and to change the service provider IdP id from `'xx_servizicie'` to `'xx_servizicie_coll'`
 
 **Returns**:
 
@@ -126,7 +126,7 @@ Inside the sample app, you can find a complete example of how to handle the CieI
   React.useEffect(() => {
     // https://reactnative.dev/docs/linking#open-links-and-deep-links-universal-links
     Linking.addEventListener('url', ({ url }) => {
-      console.log('-- -->URL from Deep Liking', url);
+      console.log('-- --> URL from Deep Liking', url);
       // if the url is of this format: iologincie:https://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2
       // extract the part after iologincie: and dispatch the action to handle the login
       if (url.startsWith('iologincie:')) {
@@ -243,7 +243,7 @@ And to add the appropriate code for deep linking in you `AppDelegate.m` file:
 
 :construction: **Note**: The `IoReactNativeCieidView` component is not production ready and it is currently only available on iOS. Android support is not yet implemented.
 
-- `sp_url` - The URL of the federated service provider.
+- `sp_url` - The `URL` of the federated service provider.
 - `sp_url_scheme` - The app bundle name to open (e.g., `it.ipzs.cieid`).
 
 ```tsx
