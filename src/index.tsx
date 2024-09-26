@@ -110,25 +110,64 @@ export function isCieIdAvailable(isUatEnvironment: boolean = false): boolean {
   return IoReactNativeCieidModule.isAppInstalled(cieIdPackageNameOrCustomUrl);
 }
 
+/**
+ * In case of error, the {@link openCieIdApp} method returns an object whos `id` property is set to `'ERROR'`.
+ * In this case the object will have a `code` property that will be one of the following error codes.
+ */
 export type CieIdModuleErrorCodes =
   | 'GENERIC_ERROR'
   | 'REACT_ACTIVITY_IS_NULL'
   | 'CIEID_ACTIVITY_IS_NULL'
-  | 'CIEID_INVALID_URL'
+  | 'CIE_NOT_REGISTERED'
+  | 'AUTHENTICATION_ERROR'
+  | 'NO_SECURE_DEVICE'
+  | 'CIEID_EMPTY_URL_AND_ERROR_EXTRAS'
+  | 'CIEID_OPERATION_CANCEL'
+  | 'CIEID_OPERATION_NOT_SUCCESSFUL'
   | 'UNKNOWN_EXCEPTION';
 
+/**
+ * The result of the {@link openCieIdApp} method, coming from the callback,
+ * is a union type of two possible results (see {@link CieIdReturnType}).
+ * In case of error, the object will be the following.
+ */
 export type CieIdErrorResult = {
   id: 'ERROR';
   code: CieIdModuleErrorCodes;
   userInfo?: Record<string, string>;
 };
+/**
+ * The result of the {@link openCieIdApp} method, coming from the callback,
+ * is a union type of two possible results (see {@link CieIdReturnType}).
+ * In case of success, the object will be the following.
+ * The `url` property is the URL that the CieID app will return to the calling app,
+ * after the authentication process is completed.
+ */
 export type CieIdSuccessResult = {
   id: 'URL';
   url: string;
 };
 
+/**
+ * The result of the {@link openCieIdApp} coming from the callback.
+ */
 export type CieIdReturnType = CieIdErrorResult | CieIdSuccessResult;
 
+/**
+ * Open the CieID app on the device.
+ * This method is useful to open the CieID app from the calling app, during the authentication process.
+ * The CieID app will return to the calling app the URL that the calling app will use to complete the authentication process.
+ * The URL will be passed to the callback function.
+ * The callback function will receive an object with the `id` property set to `'URL'` in case of success.
+ * The object will have a `url` property that will be the URL that the CieID app will return to the calling app.
+ * In case of error, the object will have the `id` property set to `'ERROR'`.
+ * The object will have a `code` property that will be one of the error codes of the {@link CieIdModuleErrorCodes} type.
+ *
+ * @param forwardUrl - The URL that the CieID app will use to continue the authentication process.
+ * @param callback - The callback function that will receive the result of the operation.
+ * @param isUatEnvironment - Optional. Default is `false`.
+ * Tells the method to use the UAT environment package name instead of the production one.
+ */
 export function openCieIdApp(
   forwardUrl: string,
   callback: (result: CieIdReturnType) => void,

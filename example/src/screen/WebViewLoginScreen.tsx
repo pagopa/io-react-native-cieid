@@ -99,7 +99,7 @@ export const WebViewLogin = () => {
       url.indexOf('nextUrl') >= 0 || // SpidL3 iOS
       url.indexOf('openApp') >= 0 // SpidL3 Android
     ) {
-      console.log('SPID L2 URL found: ', url, url.indexOf('livello2'));
+      console.log('SPID URL found: ', url);
       if (Platform.OS === 'ios') {
         const urlForCieId = `CIEID://${url}&sourceApp=iologincie`;
         console.log('---- --> iOS forward URL: ', url, urlForCieId);

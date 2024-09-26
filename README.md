@@ -57,6 +57,186 @@ const isUatInstalled = isCieIdAvailable(true);
 
 - `boolean`: Returns true if the CieID app is installed, false otherwise.
 
+<hr/>
+
+`openCieIdApp` - Allow you to open the CieID app when needed during the authentication process. It supports callback functions to handle the result of the operation.
+
+#### Example:
+
+```ts
+import { openCieIdApp } from '@pagopa/io-react-native-cieid';
+
+// Open the CieID app
+openCieIdApp('https://your-app.com/auth-callback', (result) => {
+  if (result.id === 'URL') {
+    console.log('Authentication on CieID succeeded with URL:', result.url);
+  } else if (result.id === 'ERROR') {
+    console.error(
+      'Authentication on CieID failed with error code:',
+      result.code
+    );
+  }
+});
+```
+
+**Parameters**:
+
+- `forwardUrl` _(string)_: The URL that the CieID app will use to continue the authentication process.
+- `callback` _(function)_: A callback function that receives the result of the operation either success or failure.
+- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. Tells the method to use the UAT environment package name instead of the production one.
+
+**Returns**:
+
+- On **success**, the callback will receive an object with the id property set to `'URL'` and a `url` property containing the returned `URL`.
+- On **failure**, the callback will receive an object with the id property set to `'ERROR'` and a `code` property containing one of the error codes from the `CieIdModuleErrorCodes` type.
+
+#### Android:
+
+This method uses the Android package name to open the CieID app and requires the app's package visibility in the manifest. The method will automatically use 'it.ipzs.cieid' for the production environment and 'it.ipzs.cieid.collaudo' for UAT.
+
+#### iOS:
+
+This method is not available on iOS. Use Linking.openURL to open the CieID app on iOS.
+
+In case you need to open the CieID app on iOS, you can use the following code:
+
+```ts
+import { Linking } from 'react-native';
+
+Linking.openURL('CIEID://...');
+```
+
+Be aware to subscribe to the `url` event in your app to handle the CieID app callback.
+
+```ts
+import { Linking } from 'react-native';
+
+Linking.addEventListener('url', (event) => {
+  console.log(event.url);
+});
+```
+
+Inside the example app, you can find a complete example of how to handle the CieID login process on both iOS and Android.
+
+#### Exmaple:
+
+```ts
+[...]
+
+  React.useEffect(() => {
+    // https://reactnative.dev/docs/linking#open-links-and-deep-links-universal-links
+    Linking.addEventListener('url', ({ url }) => {
+      console.log('-- -->URL from Deep Liking', url);
+      // if the url is of this format: iologincie:https://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2
+      // extract the part after iologincie: and dispatch the action to handle the login
+      if (url.startsWith('iologincie:')) {
+        const continueUrl = url.split('iologincie:')[1];
+        if (continueUrl) {
+          console.log('-- --> iOS continue URL', continueUrl);
+          setAuthenticatedUrl(continueUrl);
+        }
+      }
+    });
+
+    return () => Linking.removeAllListeners('url');
+  }, []);
+
+[...]
+
+  const handleOnShouldStartLoadWithRequest = (
+    event: WebViewNavigation
+  ): boolean => {
+    const url = event.url;
+    console.log('--> url', url);
+
+    if (url.indexOf('token=') !== -1) {
+      console.log('-^^- --> Login token found', url);
+      const token = url.split('token=')[1];
+      if (token) {
+        console.log('-^^- --> Login token extracted', token);
+        // show success alert with dismiss button navigatin back
+        Alert.alert('Login success ✅🥳', token, [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.goBack();
+            },
+          },
+        ]);
+      }
+      return false;
+    }
+
+    if (
+      url.indexOf('livello1') >= 0 || // SpidL1
+      (url.indexOf('livello2') >= 0 && url.indexOf('livello2mobile') === -1) || // SpidL2
+      url.indexOf('nextUrl') >= 0 || // SpidL3 iOS
+      url.indexOf('openApp') >= 0 // SpidL3 Android
+    ) {
+      console.log('SPID URL found: ', url);
+      if (Platform.OS === 'ios') {
+        const urlForCieId = `CIEID://${url}&sourceApp=iologincie`;
+        console.log('---- --> iOS forward URL: ', url, urlForCieId);
+        Linking.openURL(urlForCieId).catch((err) => {
+          console.error(
+            '---- --> (App CieID not installed?) An error occurred',
+            err
+          );
+          navigation.goBack();
+        });
+      } else {
+        openCieIdApp(
+          url,
+          (result) => {
+            if (result.id === 'ERROR') {
+              console.error('^--^ -->', JSON.stringify(result, null, 2));
+              navigation.goBack();
+            } else {
+              console.log('^--^ -->', result.id, result.url);
+              setAuthenticatedUrl(result.url);
+            }
+          },
+          isUat
+        );
+      }
+      return false;
+    }
+    return true;
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <WebView
+        ref={webView}
+        startInLoadingState={true}
+        userAgent={defaultUserAgent}
+        javaScriptEnabled={true}
+        originWhitelist={originSchemasWhiteList}
+        onShouldStartLoadWithRequest={handleOnShouldStartLoadWithRequest}
+        source={
+          { uri: authenticatedUrl ?? filledServiceProviderUrl } as WebViewSource
+        }
+      />
+    </SafeAreaView>
+  );
+
+[...]
+```
+
+And to add the appropriate code for deep linking in you `AppDelegate.m` file:
+
+```objc
+// https://reactnative.dev/docs/linking#open-links-and-deep-links-universal-links
+- (BOOL)application:(UIApplication *)application
+   openURL:(NSURL *)url
+   options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  return [RCTLinkingManager application:application openURL:url options:options];
+}
+```
+
+<hr/>
+
 ### IoReactNativeCieidView Component (iOS Only)
 
 **Note**: The `IoReactNativeCieidView` component is not production ready and it is currently only available on iOS. Android support is not yet implemented.
