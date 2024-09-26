@@ -18,7 +18,7 @@ yarn add @pagopa/io-react-native-cieid
 
 ### Native Module Methods
 
-`isCieIdAvailable` - Check if the CieID app is installed on the device.
+:arrow_forward: `isCieIdAvailable` - Check if the CieID app is installed on the device.
 
 #### Android:
 
@@ -59,7 +59,7 @@ const isUatInstalled = isCieIdAvailable(true);
 
 <hr/>
 
-`openCieIdApp` - Allow you to open the CieID app when needed during the authentication process. It supports callback functions to handle the result of the operation.
+:arrow_forward: `openCieIdApp` - Allow you to open the CieID app when needed during the authentication process. It supports callback functions to handle the result of the operation.
 
 #### Example:
 
