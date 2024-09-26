@@ -116,6 +116,18 @@ Linking.addEventListener('url', (event) => {
 });
 ```
 
+And to add the appropriate code for deep linking in you `AppDelegate.m` file:
+
+```objc
+// https://reactnative.dev/docs/linking#open-links-and-deep-links-universal-links
+- (BOOL)application:(UIApplication *)application
+   openURL:(NSURL *)url
+   options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  return [RCTLinkingManager application:application openURL:url options:options];
+}
+```
+
 Inside the sample app, you can find a complete example of how to handle the CieID login process on both iOS and Android.
 
 #### Example:
@@ -221,18 +233,6 @@ Inside the sample app, you can find a complete example of how to handle the CieI
   );
 
 [...]
-```
-
-And to add the appropriate code for deep linking in you `AppDelegate.m` file:
-
-```objc
-// https://reactnative.dev/docs/linking#open-links-and-deep-links-universal-links
-- (BOOL)application:(UIApplication *)application
-   openURL:(NSURL *)url
-   options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
-{
-  return [RCTLinkingManager application:application openURL:url options:options];
-}
 ```
 
 :rotating_light: If you use the sample app to test the CieID login process, remember that you actual session on App IO will be invalidated. :rotating_light:
