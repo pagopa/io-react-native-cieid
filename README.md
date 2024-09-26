@@ -28,7 +28,7 @@ Due to Android 11's package visibility restrictions, apps need to declare the pa
 
 To check if the CieID app can be opened via its `URL` scheme, you need to declare the URL scheme in your `Info.plist` file.
 
-Add the following to your `Info.plist`:
+Add the following value to [LSApplicationQueriesSchemes](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl#discussion) key inside your `Info.plist`:
 
 ```xml
 <key>LSApplicationQueriesSchemes</key>
