@@ -1,16 +1,24 @@
 import * as React from 'react';
 
 import { openCieIdApp } from '@pagopa/io-react-native-cieid';
-import {
-  Alert,
-  Linking,
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-} from 'react-native';
+import { Alert, Linking, Platform, SafeAreaView } from 'react-native';
 import WebView, { type WebViewNavigation } from 'react-native-webview';
 import type { WebViewSource } from 'react-native-webview/lib/WebViewTypes';
-import { useNavigation } from '@react-navigation/native';
+import {
+  type RouteProp,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
+import { styles } from '../common/style';
+import type { NavigatorStackParamList } from '../navigation';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type SpidLevel = 'SpidL2' | 'SpidL3';
+
+export type WebViewLoginNavigationProps = {
+  spidLevel: SpidLevel;
+  isUat: boolean;
+};
 
 const iOSUserAgent =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1';
@@ -21,8 +29,9 @@ const defaultUserAgent = Platform.select({
 
 const originSchemasWhiteList = ['https://*', 'iologin://*'];
 
+// Set servie provider URL as pattern string for entityID=xx_servizicie and authLevel=SpidL2
 const serviceProviderUrl =
-  'https://app-backend.io.italia.it/login?entityID=xx_servizicie&authLevel=SpidL2';
+  'https://app-backend.io.italia.it/login?entityID={ID}&authLevel={SPID_LEVEL}';
 
 export const WebViewLogin = () => {
   React.useEffect(() => {
@@ -48,7 +57,17 @@ export const WebViewLogin = () => {
     null
   );
 
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<
+      NativeStackNavigationProp<NavigatorStackParamList, 'WebViewLogin'>
+    >();
+
+  const route = useRoute<RouteProp<NavigatorStackParamList, 'WebViewLogin'>>();
+  const { spidLevel, isUat } = route.params;
+  console.log('<-- ^^ --> spidLevel: ', spidLevel, 'isUat: ', isUat);
+  const filledServiceProviderUrl = serviceProviderUrl
+    .replace('{SPID_LEVEL}', spidLevel)
+    .replace('{ID}', isUat ? 'xx_servizicie_coll' : 'xx_servizicie');
 
   const handleOnShouldStartLoadWithRequest = (
     event: WebViewNavigation
@@ -74,7 +93,12 @@ export const WebViewLogin = () => {
       return false;
     }
 
-    if (url.indexOf('livello2') >= 0 && url.indexOf('livello2mobile') === -1) {
+    if (
+      url.indexOf('livello1') >= 0 || // SpidL1
+      (url.indexOf('livello2') >= 0 && url.indexOf('livello2mobile') === -1) || // SpidL2
+      url.indexOf('nextUrl') >= 0 || // SpidL3 iOS
+      url.indexOf('openApp') >= 0 // SpidL3 Android
+    ) {
       console.log('SPID L2 URL found: ', url, url.indexOf('livello2'));
       if (Platform.OS === 'ios') {
         const urlForCieId = `CIEID://${url}&sourceApp=iologincie`;
@@ -87,15 +111,19 @@ export const WebViewLogin = () => {
           navigation.goBack();
         });
       } else {
-        openCieIdApp(url, (result) => {
-          if (result.id === 'ERROR') {
-            console.error('^--^ -->', JSON.stringify(result, null, 2));
-            navigation.goBack();
-          } else {
-            console.log('^--^ -->', result.id, result.url);
-            setAuthenticatedUrl(result.url);
-          }
-        });
+        openCieIdApp(
+          url,
+          (result) => {
+            if (result.id === 'ERROR') {
+              console.error('^--^ -->', JSON.stringify(result, null, 2));
+              navigation.goBack();
+            } else {
+              console.log('^--^ -->', result.id, result.url);
+              setAuthenticatedUrl(result.url);
+            }
+          },
+          isUat
+        );
       }
       return false;
     }
@@ -112,17 +140,9 @@ export const WebViewLogin = () => {
         originWhitelist={originSchemasWhiteList}
         onShouldStartLoadWithRequest={handleOnShouldStartLoadWithRequest}
         source={
-          { uri: authenticatedUrl ?? serviceProviderUrl } as WebViewSource
+          { uri: authenticatedUrl ?? filledServiceProviderUrl } as WebViewSource
         }
       />
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    marginHorizontal: 16,
-  },
-});

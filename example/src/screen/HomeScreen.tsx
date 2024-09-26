@@ -1,8 +1,9 @@
 import * as React from 'react';
 
 import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Button, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Button, SafeAreaView, Text, View } from 'react-native';
 import type { NavigatorStackParamList } from '../navigation';
+import { styles } from '../common/style';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   NavigatorStackParamList,
@@ -41,26 +42,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           title="Test CieId Login"
           // nice fluo color
           color="#00ee66"
-          onPress={() => navigation.navigate('WebViewLogin')}
+          onPress={() => navigation.navigate('WebViewLoginConfig')}
         />
       </View>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    marginHorizontal: 16,
-  },
-  title: {
-    textAlign: 'center',
-    marginVertical: 8,
-  },
-  separator: {
-    marginVertical: 8,
-    borderBottomColor: '#737373',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-});

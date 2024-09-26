@@ -1,14 +1,8 @@
 import * as React from 'react';
 
-import {
-  Alert,
-  Button,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Button, SafeAreaView, Text, View } from 'react-native';
 import { isCieIdAvailable, openCieIdApp } from '@pagopa/io-react-native-cieid';
+import { styles } from '../common/style';
 
 export const NativeModule = () => (
   <SafeAreaView style={styles.container}>
@@ -86,20 +80,3 @@ export const NativeModule = () => (
     </View>
   </SafeAreaView>
 );
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    marginHorizontal: 16,
-  },
-  title: {
-    textAlign: 'center',
-    marginVertical: 8,
-  },
-  separator: {
-    marginVertical: 8,
-    borderBottomColor: '#737373',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-});
