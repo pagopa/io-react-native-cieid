@@ -42,9 +42,18 @@ export const WebViewLogin = () => {
       // extract the part after iologincie: and dispatch the action to handle the login
       if (url.startsWith('iologincie:')) {
         const continueUrl = url.split('iologincie:')[1];
+
         if (continueUrl) {
           console.log('-- --> iOS continue URL', continueUrl);
-          setAuthenticatedUrl(continueUrl);
+          // https://idserver.servizicie.interno.gov.it/cieiderror?cieid_error_message=Operazione_annullata_dall'utente
+          // We check if the continueUrl is an error
+          if (continueUrl.indexOf('cieiderror') !== -1) {
+            // And we extract the error message and show it in an alert
+            const errorMessage = continueUrl.split('cieid_error_message=')[1];
+            Alert.alert('Login error ❌', errorMessage ?? 'error');
+          } else {
+            setAuthenticatedUrl(continueUrl);
+          }
         }
       }
     });
