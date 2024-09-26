@@ -54,9 +54,9 @@ export const WebViewLoginConfig: React.FC<HomeScreenProps> = () => {
       <View>
         <Text
           style={styles.title}
-        >{`Test CieId ${isUatEnabled ? 'UAT' : 'production'} login with ${isSpidLevel3Enabled ? 'L3' : 'L2'}`}</Text>
+        >{`Test CieID ${isUatEnabled ? 'UAT' : 'production'} login with ${isSpidLevel3Enabled ? 'L3' : 'L2'}`}</Text>
         <Button
-          title="Test CieId Login"
+          title="Test CieID Login"
           // nice fluo color
           color="#00ee66"
           onPress={() =>
