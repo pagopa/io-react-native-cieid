@@ -92,11 +92,11 @@ openCieIdApp('https://your-app.com/auth-callback', (result) => {
 
 #### Android:
 
-This method uses the Android package name to open the CieID app and requires the app's package visibility in the manifest. The method will automatically use 'it.ipzs.cieid' for the production environment and 'it.ipzs.cieid.collaudo' for UAT.
+This method uses the Android package name to open the CieID app and requires the app's package visibility in the manifest. The method will automatically use `'it.ipzs.cieid'` for the production environment and `'it.ipzs.cieid.collaudo'` for UAT.
 
 #### iOS:
 
-This method is not available on iOS. Use Linking.openURL to open the CieID app on iOS.
+:warning: This method is not available on iOS. Use `Linking.openURL` to open the CieID app on iOS.
 
 In case you need to open the CieID app on iOS, you can use the following code:
 
@@ -235,11 +235,13 @@ And to add the appropriate code for deep linking in you `AppDelegate.m` file:
 }
 ```
 
+:rotating_light: If you use the sample app to test the CieID login process, remember that you actual session on App IO will be invalidated. :rotating_light:
+
 <hr/>
 
 ### IoReactNativeCieidView Component (iOS Only)
 
-**Note**: The `IoReactNativeCieidView` component is not production ready and it is currently only available on iOS. Android support is not yet implemented.
+:construction: **Note**: The `IoReactNativeCieidView` component is not production ready and it is currently only available on iOS. Android support is not yet implemented.
 
 - `sp_url` - The URL of the federated service provider.
 - `sp_url_scheme` - The app bundle name to open (e.g., `it.ipzs.cieid`).
