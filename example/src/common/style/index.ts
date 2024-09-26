@@ -18,6 +18,14 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
+  disclaimer: {
+    textAlign: 'center',
+    marginVertical: 8,
+    fontSize: 20,
+    color: 'red',
+    backgroundColor: 'yellow',
+    fontWeight: 'bold',
+  },
   separator: {
     marginVertical: 8,
     borderBottomColor: '#737373',

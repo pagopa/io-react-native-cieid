@@ -29,6 +29,13 @@ export const WebViewLoginConfig: React.FC<HomeScreenProps> = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View>
+        <Text style={styles.disclaimer}>
+          🚨 Be aware that if you do a success login, your current App IO
+          session will be invalidated. 🚨
+        </Text>
+      </View>
+      <View style={styles.separator} />
       <View style={styles.switchContainer}>
         <Text style={styles.title}>SPID Level 3 (default is 2)</Text>
         <Switch
@@ -45,7 +52,9 @@ export const WebViewLoginConfig: React.FC<HomeScreenProps> = () => {
       </View>
       <View style={styles.separator} />
       <View>
-        <Text style={styles.title}>Test CieId production login</Text>
+        <Text
+          style={styles.title}
+        >{`Test CieId ${isUatEnabled ? 'UAT' : 'production'} login with ${isSpidLevel3Enabled ? 'L3' : 'L2'}`}</Text>
         <Button
           title="Test CieId Login"
           // nice fluo color

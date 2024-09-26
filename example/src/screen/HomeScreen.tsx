@@ -37,7 +37,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </View>
       <View style={styles.separator} />
       <View>
-        <Text style={styles.title}>Test CieId production login</Text>
+        <Text style={styles.title}>Test CieId login</Text>
         <Button
           title="Test CieId Login"
           // nice fluo color
