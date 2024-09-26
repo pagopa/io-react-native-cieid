@@ -116,7 +116,7 @@ Linking.addEventListener('url', (event) => {
 });
 ```
 
-Inside the example app, you can find a complete example of how to handle the CieID login process on both iOS and Android.
+Inside the sample app, you can find a complete example of how to handle the CieID login process on both iOS and Android.
 
 #### Example:
 
