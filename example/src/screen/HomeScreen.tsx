@@ -37,9 +37,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </View>
       <View style={styles.separator} />
       <View>
-        <Text style={styles.title}>Test CieId login</Text>
+        <Text style={styles.title}>Test CieID login</Text>
         <Button
-          title="Test CieId Login"
+          title="Test CieID Login"
           // nice fluo color
           color="#00ee66"
           onPress={() => navigation.navigate('WebViewLoginConfig')}

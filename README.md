@@ -2,7 +2,7 @@
 
 A React Native bridge to integrate CieID authentication into your app. It provides both a native UI component and native module methods to interact with the CieID app. It's based on [cieid-ios-sdk](https://github.com/IPZSMobileTeam/cieid-ios-sdk) and [cieid-android-sdk](https://github.com/IPZSMobileTeam/cieid-android-sdk).
 
-**NOTE:** The Native View component (`IoReactNativeCieidView`) is currently only available on iOS. Android platform support is not yet implemented for the Native View. However, the Native Module methods (e.g., `isCieIdAvailable`) are available on both iOS and Android.
+:construction: **NOTE:** The Native View component (`IoReactNativeCieidView`) is currently only available on iOS. Android platform support is not yet implemented for the Native View. However, the Native Module methods (e.g., `isCieIdAvailable`) are available on both iOS and Android.
 
 ## Installation
 
