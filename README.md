@@ -55,7 +55,7 @@ const isUatInstalled = isCieIdAvailable(true);
 
 **Returns**:
 
-- `boolean`: Returns `true` if the CieID app is installed, false otherwise.
+- `boolean`: Returns `true` if the CieID app is installed, `false` otherwise.
 
 <hr/>
 
@@ -108,7 +108,7 @@ Linking.openURL(urlForCieId).catch((err) => {
 });
 ```
 
-Be aware to subscribe to the `url` event in your app to handle the CieID app callback.
+Be aware to subscribe to the `url` event in your app to handle the CieID app callback coming from the deep linking.
 
 ```ts
 import { Linking } from 'react-native';
