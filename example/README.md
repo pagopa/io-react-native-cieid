@@ -103,24 +103,24 @@ sequenceDiagram
     WV-->>CIEIDBE: https://idserver.servizicie.interno.gov.it/idp/profile/SAML2/Redirect/SSO?SAMLRequest=[...]]
     WV-->>WV: Wait for `livello2` query param
     CIEIDBE-->>WV: https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2
-    WV-->>WV: Add `sourceApp=iologin` query param
-    Note right of WV: https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologin
+    WV-->>WV: Add `sourceApp=iologincie` query param
+    Note right of WV: https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologincie
     WV-->>WV: Append scheme `CIEID://`
-    Note right of WV: CIEID://https:idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologin
+    Note right of WV: CIEID://https:idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologincie
     WV-->>WV: Stop navigation inside the WebView
-    WV->>OS: OPEN CIEID://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologin
+    WV->>OS: OPEN CIEID://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologincie
     OS-->>CieID: Open CieID
-    CieID-->>CieID: Handle Identification for CIEID://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologin
+    CieID-->>CieID: Handle Identification for CIEID://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologincie
     alt CieID identification Error
-        Note right of CieID: ⚠️ Check what happens in this case. <br/> Es: "iologin://https://idserver.servizicie.interno.gov.it/cieiderror?cieid_error_message=Operazione_annullata_dall'utente" <br/> 💡 È sempre presente un URL con path `cieiderror`?
+        Note right of CieID: ⚠️ Check what happens in this case. <br/> Es: "iologincie://https://idserver.servizicie.interno.gov.it/cieiderror?cieid_error_message=Operazione_annullata_dall'utente" <br/>
     else CieID identification Success
         CieID-->>C: Show success screen with "Continue" CTA
     end
     C->>CieID: Tap on "Continue"
-    CieID->>OS: OPEN iologin://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2
+    CieID->>OS: OPEN iologincie://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2
     OS-->>App: Return to App App
-    App-->>App: Handle iologin://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2
-    Note right of App: Replace iologin:// with https://
+    App-->>App: Handle iologincie://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2
+    Note right of App: Replace iologincie:// with https://
     App-->>WV: GET https://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2"
     WV-->>C: Show /acs
 ```
