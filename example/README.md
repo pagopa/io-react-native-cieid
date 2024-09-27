@@ -2,7 +2,7 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
 
 # Getting Started
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+> **Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
 
 ## Step 1: Start the Metro Server
 
@@ -46,34 +46,81 @@ If everything is set up _correctly_, you should see your new app running in your
 
 This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
 
-## Step 3: Modifying your App
+## Android Login Flow
 
-Now that you have successfully run the app, let's modify it.
+The test CieId login flow is as follows:
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+```mermaid
+sequenceDiagram
+    participant C as Citizen
+    participant App
+    participant WV as WebView
+    participant IOBE as SP
+    participant CIEIDBE as CieID Backend
+    participant CieID as App CieID
+    participant OS as Android
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+    C->>App: Start CieID identification
 
-## Congratulations! :tada:
+    App->>WV: GET https://app-backend.io.italia.it/login?entityID=xx_servizicie&authLevel=SpidL2
+    WV-->>CIEIDBE: https://idserver.servizicie.interno.gov.it/idp/profile/SAML2/Redirect/SSO?SAMLRequest=[...]]
+    WV-->>WV: Wait for `livello2` query param
+    CIEIDBE-->>WV: https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2
+    WV-->>WV: Stop navigation inside the WebView
+    WV->>OS: OPEN through Android Intent <BR /> https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2 <BR /> with CieID
 
-You've successfully run and modified your React Native App. :partying_face:
+    OS-->>CieID: Open CieID
+    CieID-->>CieID: Handle Identification for https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2
+    alt CieID identification Error <BR /> coming through onActivityResult with RESULT_OK and "ERROR" key inside Intent data.
+        Note right of CieID: ⚠️ Check what happens in this case. <BR /> RedirectionError.GENERIC_ERROR.code <BR /> RedirectionError.CIE_NOT_REGISTERED.code <BR /> RedirectionError.AUTHENTICATION_ERROR.code <BR /> RedirectionError.NO_SECURE_DEVICE.code <BR />
+    else CieID identification Success
+        CieID-->>C: Show success screen with "Continue" CTA
+    end
+    C->>CieID: Tap on "Continue"
+    CieID->>OS: SEND RESULT TO CALLER APP: <BR /> RESULT_OK and key "URL" with value https://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2 <BR /> Inside Intent Data
+    OS-->>App: Return to App App
+    App-->>App: OBTAIN https://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2 from Intent Data
+    App-->>WV: GET https://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2"
+    WV-->>C: Show /acs
+```
 
-### Now what?
+## iOS Login Flow
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+The test CieId login flow is as follows:
 
-# Troubleshooting
+```mermaid
+sequenceDiagram
+    participant C as Citizen
+    participant App
+    participant WV as WebView
+    participant IOBE as SP
+    participant CIEIDBE as CieID Backend
+    participant CieID as App CieID
+    participant OS as Android
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+    C->>App: Start CieID identification
+    App->>WV: GET https://app-backend.io.italia.it/login?entityID=xx_servizicie&authLevel=SpidL2
+    WV-->>CIEIDBE: https://idserver.servizicie.interno.gov.it/idp/profile/SAML2/Redirect/SSO?SAMLRequest=[...]]
+    WV-->>WV: Wait for `livello2` query param
+    CIEIDBE-->>WV: https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2
+    WV-->>WV: Add `sourceApp=iologin` query param
+    Note right of WV: https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologin
+    WV-->>WV: Append scheme `CIEID://`
+    Note right of WV: CIEID://https:idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologin
+    WV-->>WV: Stop navigation inside the WebView
+    WV->>OS: OPEN CIEID://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologin
+    OS-->>CieID: Open CieID
+    CieID-->>CieID: Handle Identification for CIEID://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2&sourceApp=iologin
+    alt CieID identification Error
+        Note right of CieID: ⚠️ Check what happens in this case. <br/> Es: "iologin://https://idserver.servizicie.interno.gov.it/cieiderror?cieid_error_message=Operazione_annullata_dall'utente" <br/> 💡 È sempre presente un URL con path `cieiderror`?
+    else CieID identification Success
+        CieID-->>C: Show success screen with "Continue" CTA
+    end
+    C->>CieID: Tap on "Continue"
+    CieID->>OS: OPEN iologin://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2
+    OS-->>App: Return to App App
+    App-->>App: Handle iologin://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2
+    Note right of App: Replace iologin:// with https://
+    App-->>WV: GET https://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2"
+    WV-->>C: Show /acs
+```
