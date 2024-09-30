@@ -96,7 +96,7 @@ sequenceDiagram
     participant IOBE as SP
     participant CIEIDBE as CieID Backend
     participant CieID as App CieID
-    participant OS as Android
+    participant OS as iOS
 
     C->>App: Start CieID identification
     App->>WV: GET https://app-backend.io.italia.it/login?entityID=xx_servizicie&authLevel=SpidL2
