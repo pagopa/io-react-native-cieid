@@ -1,51 +1,30 @@
 import * as React from 'react';
 
-import { Platform, StyleSheet } from 'react-native';
-import {
-  IoReactNativeCieidView,
-  multiply,
-} from '@pagopa/io-react-native-cieid';
+import { NavigationContainer } from '@react-navigation/native';
+import { Stack } from './navigation';
+import { HomeScreen } from './screen/HomeScreen';
+import { NativeModule } from './screen/NativeModuleScreen';
+import { NativeView } from './screen/NativeViewScreen';
+import { WebViewLogin } from './screen/WebViewLoginScreen';
+import { WebViewLoginConfig } from './screen/WebViewLoginConfigScreen';
 
 export default function App() {
-  React.useEffect(() => {
-    const platformName = Platform.OS;
-    const message = `${platformName} - Test multiply 3 * 7 =`;
-    multiply(3, 7)
-      .then((r) => {
-        console.log(message, r);
-      })
-      .catch((e) => {
-        console.error(message, e);
-      });
-  }, []);
-
   return (
-    <IoReactNativeCieidView
-      sp_url={'https://ios.idserver.servizicie.interno.gov.it/'}
-      sp_url_scheme={'it.ipzs.cieid'}
-      style={styles.container}
-      onCieIDAuthenticationCanceled={() =>
-        console.log('onCieIDAuthenticationCanceled')
-      }
-      onCieIDAuthenticationSuccess={() =>
-        console.log('onCieIDAuthenticationSuccess')
-      }
-      onCieIDAuthenticationError={() =>
-        console.log('onCieIDAuthenticationError')
-      }
-    />
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: 'CieID React Native Library' }}
+        />
+        <Stack.Screen name="NativeModule" component={NativeModule} />
+        <Stack.Screen name="NativeView" component={NativeView} />
+        <Stack.Screen name="WebViewLogin" component={WebViewLogin} />
+        <Stack.Screen
+          name="WebViewLoginConfig"
+          component={WebViewLoginConfig}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'red',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  box: {
-    backgroundColor: 'blue',
-    marginVertical: 20,
-  },
-});

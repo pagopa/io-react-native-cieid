@@ -2,9 +2,7 @@
 
 @interface RCT_EXTERN_MODULE(IoReactNativeCieidModule, NSObject)
 
-RCT_EXTERN_METHOD(multiply:(float)a withB:(float)b
-                 withResolver:(RCTPromiseResolveBlock)resolve
-                 withRejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN__BLOCKING_SYNCHRONOUS_METHOD(isAppInstalled:(NSString *)appScheme)
 
 + (BOOL)requiresMainQueueSetup
 {
