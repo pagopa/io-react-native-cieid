@@ -118,7 +118,7 @@ Linking.addEventListener('url', (event) => {
 });
 ```
 
-And to add the appropriate code for deep linking in you `AppDelegate.m` file:
+And to add the appropriate code for deep linking in your `AppDelegate.m` file:
 
 ```objc
 // https://reactnative.dev/docs/linking#open-links-and-deep-links-universal-links
