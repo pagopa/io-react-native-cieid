@@ -1,6 +1,6 @@
 {
   "name": "@pagopa/io-react-native-cieid",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "A bridge to add CieID auth on IO",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
