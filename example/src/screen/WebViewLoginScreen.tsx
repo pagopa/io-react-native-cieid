@@ -36,29 +36,32 @@ const serviceProviderUrl =
 export const WebViewLogin = () => {
   React.useEffect(() => {
     // https://reactnative.dev/docs/linking#open-links-and-deep-links-universal-links
-    Linking.addEventListener('url', ({ url }) => {
-      console.log('-- -->URL from Deep Liking', url);
-      // if the url is of this format: iologincie:https://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2
-      // extract the part after iologincie: and dispatch the action to handle the login
-      if (url.startsWith('iologincie:')) {
-        const continueUrl = url.split('iologincie:')[1];
+    const urlListenerSubscription = Linking.addEventListener(
+      'url',
+      ({ url }) => {
+        console.log('-- -->URL from Deep Liking', url);
+        // if the url is of this format: iologincie:https://idserver.servizicie.interno.gov.it/idp/login/livello2mobile?value=e1s2
+        // extract the part after iologincie: and dispatch the action to handle the login
+        if (url.startsWith('iologincie:')) {
+          const continueUrl = url.split('iologincie:')[1];
 
-        if (continueUrl) {
-          console.log('-- --> iOS continue URL', continueUrl);
-          // https://idserver.servizicie.interno.gov.it/cieiderror?cieid_error_message=Operazione_annullata_dall'utente
-          // We check if the continueUrl is an error
-          if (continueUrl.indexOf('cieiderror') !== -1) {
-            // And we extract the error message and show it in an alert
-            const errorMessage = continueUrl.split('cieid_error_message=')[1];
-            Alert.alert('Login error ❌', errorMessage ?? 'error');
-          } else {
-            setAuthenticatedUrl(continueUrl);
+          if (continueUrl) {
+            console.log('-- --> iOS continue URL', continueUrl);
+            // https://idserver.servizicie.interno.gov.it/cieiderror?cieid_error_message=Operazione_annullata_dall'utente
+            // We check if the continueUrl is an error
+            if (continueUrl.indexOf('cieiderror') !== -1) {
+              // And we extract the error message and show it in an alert
+              const errorMessage = continueUrl.split('cieid_error_message=')[1];
+              Alert.alert('Login error ❌', errorMessage ?? 'error');
+            } else {
+              setAuthenticatedUrl(continueUrl);
+            }
           }
         }
       }
-    });
+    );
 
-    return () => Linking.removeAllListeners('url');
+    return () => urlListenerSubscription.remove();
   }, []);
 
   const webView = React.useRef<WebView>(null);

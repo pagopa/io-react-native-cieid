@@ -114,7 +114,11 @@ class CieIDWKWebViewController: UIViewController, WKNavigationDelegate {
   
   private func addActivityIndicatory() {
     
-    activityIndicator = UIActivityIndicatorView(style: .large)
+    if #available(iOS 13.0, *) {
+      activityIndicator = UIActivityIndicatorView(style: .large)
+    } else {
+      activityIndicator = UIActivityIndicatorView()
+    }
     activityIndicator.color = UIColor.lightGray
     activityIndicator.center = self.view.center
     self.view.addSubview(activityIndicator)
