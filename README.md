@@ -1,8 +1,6 @@
 # @pagopa/io-react-native-cieid 🪪
 
-A React Native bridge to integrate CieID authentication into your app. It provides both a native UI component and native module methods to interact with the CieID app. It's based on [cieid-ios-sdk](https://github.com/IPZSMobileTeam/cieid-ios-sdk) and [cieid-android-sdk](https://github.com/IPZSMobileTeam/cieid-android-sdk).
-
-:construction: **NOTE:** The Native View component (`IoReactNativeCieidView`) is currently only available on iOS. Android platform support is not yet implemented for the Native View. However, the Native Module methods (e.g., `isCieIdAvailable`) are available on both iOS and Android.
+A React Native bridge to integrate CieID authentication into your app. It provides a native module methods to interact with the CieID app. It's based on [cieid-ios-sdk](https://github.com/IPZSMobileTeam/cieid-ios-sdk) and [cieid-android-sdk](https://github.com/IPZSMobileTeam/cieid-android-sdk).
 
 ## Installation
 
@@ -249,7 +247,7 @@ Inside the sample app, you can find a complete example of how to handle the CieI
 [...]
 ```
 
-:rotating_light: If you use the sample app to test the CieID login process, remember that you actual session on App IO will be invalidated. :rotating_light:
+:rotating_light: If you use the sample app to test the CieID login process, remember that your actual session on App IO will be invalidated. :rotating_light:
 
 ## Contributing
 
