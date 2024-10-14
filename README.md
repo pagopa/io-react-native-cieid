@@ -251,36 +251,6 @@ Inside the sample app, you can find a complete example of how to handle the CieI
 
 :rotating_light: If you use the sample app to test the CieID login process, remember that you actual session on App IO will be invalidated. :rotating_light:
 
-<hr/>
-
-### IoReactNativeCieidView Component (iOS Only)
-
-:construction: **Note**: The `IoReactNativeCieidView` component is not production ready and it is currently only available on iOS. Android support is not yet implemented.
-
-- `sp_url` - The `URL` of the federated service provider.
-- `sp_url_scheme` - The app bundle name to open (e.g., `it.ipzs.cieid`).
-
-```tsx
-import { IoReactNativeCieidView } from '@pagopa/io-react-native-cieid';
-
-// ...
-
-<IoReactNativeCieidView
-  sp_url={'https://ios.idserver.servizicie.interno.gov.it/'}
-  sp_url_scheme={'it.ipzs.cieid'}
-  style={styles.container}
-  onCieIDAuthenticationCanceled={() =>
-    console.log('onCieIDAuthenticationCanceled')
-  }
-  onCieIDAuthenticationSuccess={() =>
-    console.log('onCieIDAuthenticationSuccess')
-  }
-  onCieIDAuthenticationError={() => console.log('onCieIDAuthenticationError')}
-/>;
-
-// ...
-```
-
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
