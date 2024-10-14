@@ -28,20 +28,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </View>
       <View style={styles.separator} />
       <View>
-        <Text style={styles.title}>Test SDK native view integration</Text>
-        <Button
-          title="Native SDK"
-          color="#ff6600"
-          onPress={() => navigation.navigate('NativeView')}
-        />
-      </View>
-      <View style={styles.separator} />
-      <View>
         <Text style={styles.title}>Test CieID login</Text>
         <Button
           title="Test CieID Login"
           // nice fluo color
-          color="#00ee66"
+          color="#ff6600"
           onPress={() => navigation.navigate('WebViewLoginConfig')}
         />
       </View>
