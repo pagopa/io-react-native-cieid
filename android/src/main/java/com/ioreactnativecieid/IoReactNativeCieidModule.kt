@@ -14,6 +14,7 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import org.json.JSONObject
+import java.security.MessageDigest
 
 typealias ME = IoReactNativeCieidModule.Companion.ModuleException
 
@@ -28,9 +29,40 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
 
   override fun getName() = NAME
 
+  private fun isSignatureValid(packageName: String, signature: String): Boolean {
+    val pm = reactApplicationContext.packageManager
+    val packageInfo = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+      pm.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
+    } else {
+      @Suppress("DEPRECATION")
+      pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+    }
+
+    val signatures = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+      packageInfo.signingInfo.apkContentsSigners
+    } else {
+      @Suppress("DEPRECATION")
+      packageInfo.signatures
+    }
+
+    val sha256List = signatures.map {
+      val digest = MessageDigest.getInstance("SHA-256")
+      digest.update(it.toByteArray())
+      // Converts bytes in hexadecimal uppercase string
+      digest.digest().joinToString(":") { byte ->
+        "%02x".format(byte).uppercase()
+      }
+    }
+    // Returns the first sha256 signature
+    return sha256List.contains(signature)
+  }
+
   @ReactMethod(isBlockingSynchronousMethod = true)
-  fun isAppInstalled(packageName: String): Boolean = try {
+  fun isAppInstalled(packageName: String, signature: String): Boolean = try {
     reactApplicationContext.packageManager.getPackageInfo(packageName, 0)
+    if(!isSignatureValid(packageName, signature)) {
+      throw PackageManager.NameNotFoundException()
+    }
     true
   } catch (e: PackageManager.NameNotFoundException) {
     false
@@ -40,6 +72,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   fun launchCieIdForResult(
     packageName: String,
     className: String,
+    signature: String,
     url: String,
     resultCallback: Callback
   ) {
@@ -51,6 +84,11 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       }
 
       try {
+        if(!isSignatureValid(packageName, signature)) {
+          onActivityResultCallback = null
+          ME.CIEID_SIGNATURE_MISMATCH.invoke(resultCallback)
+          return;
+        }
         activity.startActivityForResult(intent, 0)
         onActivityResultCallback = resultCallback
       } catch (anfEx: ActivityNotFoundException) {
@@ -123,6 +161,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       GENERIC_ERROR(Exception("GENERIC_ERROR")),
       REACT_ACTIVITY_IS_NULL(Exception("REACT_ACTIVITY_IS_NULL")),
       CIEID_ACTIVITY_IS_NULL(Exception("CIEID_ACTIVITY_IS_NULL")),
+      CIEID_SIGNATURE_MISMATCH(Exception("CIEID_SIGNATURE_MISMATCH")),
       CIE_NOT_REGISTERED(Exception("CIE_NOT_REGISTERED")),
       AUTHENTICATION_ERROR(Exception("AUTHENTICATION_ERROR")),
       NO_SECURE_DEVICE(Exception("NO_SECURE_DEVICE")),

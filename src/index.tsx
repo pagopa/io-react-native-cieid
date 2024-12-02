@@ -9,13 +9,15 @@ const LINKING_ERROR =
 const IoReactNativeCieidModule = NativeModules.IoReactNativeCieidModule
   ? NativeModules.IoReactNativeCieidModule
   : new Proxy(
-      {},
+      { isAppInstalled: () => false, launchCieIdForResult: () => {} },
       {
         get() {
           throw new Error(LINKING_ERROR);
         },
       }
     );
+const CIEID_SIGNATURE =
+  '92:D1:35:40:D4:50:F6:9F:79:2C:5F:3C:77:0A:E2:85:5B:FB:23:58:B4:47:A8:DE:06:4D:51:D0:35:8E:B6:97';
 
 export type AndroidCiedIdPackageName =
   | 'it.ipzs.cieid'
@@ -79,11 +81,13 @@ export type CieIdPackageNameOrCustomUrl =
  * @returns `true` if the CieID app is installed, `false` otherwise.
  */
 export function isCieIdAvailable(isUatEnvironment: boolean = false): boolean {
-  const cieIdPackageNameOrCustomUrl = Platform.select({
-    ios: 'CIEID',
-    default: isUatEnvironment ? 'it.ipzs.cieid.collaudo' : 'it.ipzs.cieid',
-  });
-  return IoReactNativeCieidModule.isAppInstalled(cieIdPackageNameOrCustomUrl);
+  if (Platform.OS === 'ios') {
+    return IoReactNativeCieidModule.isAppInstalled('CIEID');
+  }
+  return IoReactNativeCieidModule.isAppInstalled(
+    isUatEnvironment ? 'it.ipzs.cieid.collaudo' : 'it.ipzs.cieid',
+    CIEID_SIGNATURE
+  );
 }
 
 /**
@@ -94,6 +98,7 @@ export type CieIdModuleErrorCodes =
   | 'GENERIC_ERROR'
   | 'REACT_ACTIVITY_IS_NULL'
   | 'CIEID_ACTIVITY_IS_NULL'
+  | 'CIEID_SIGNATURE_MISMATCH'
   | 'CIE_NOT_REGISTERED'
   | 'AUTHENTICATION_ERROR'
   | 'NO_SECURE_DEVICE'
@@ -160,6 +165,7 @@ export function openCieIdApp(
   return IoReactNativeCieidModule.launchCieIdForResult(
     cieIdPackageNameOrCustomUrl,
     'it.ipzs.cieid.BaseActivity',
+    CIEID_SIGNATURE,
     forwardUrl,
     callback
   );
