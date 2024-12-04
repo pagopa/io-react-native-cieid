@@ -3,7 +3,9 @@ package com.ioreactnativecieid
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.content.pm.Signature
 import android.net.Uri
 import android.util.Log
 import com.facebook.react.bridge.ActivityEventListener
@@ -11,9 +13,7 @@ import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
-import org.json.JSONObject
 import java.security.MessageDigest
 
 typealias ME = IoReactNativeCieidModule.Companion.ModuleException
@@ -31,30 +31,35 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
 
   private fun isSignatureValid(packageName: String, signature: String): Boolean {
     val pm = reactApplicationContext.packageManager
-    val packageInfo = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-      pm.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
-    } else {
-      @Suppress("DEPRECATION")
-      pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-    }
-
-    val signatures = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-      packageInfo.signingInfo.apkContentsSigners
-    } else {
-      @Suppress("DEPRECATION")
-      packageInfo.signatures
-    }
-
-    val sha256List = signatures.map {
-      val digest = MessageDigest.getInstance("SHA-256")
-      digest.update(it.toByteArray())
-      // Converts bytes in hexadecimal uppercase string
-      digest.digest().joinToString(":") { byte ->
-        "%02x".format(byte).uppercase()
-      }
-    }
-    // Returns the first sha256 signature
+    val packageInfo = pm.getPackageInfoCompat(packageName)
+    val signatures = packageInfo.getSignaturesCompat()
+    val sha256List = signatures.map { it.toSha256() }
+    // Check if the given signature is in the SHA-256 list
     return sha256List.contains(signature)
+  }
+  // Extension function to handle API compatibility for getPackageInfo
+  private fun PackageManager.getPackageInfoCompat(packageName: String): PackageInfo {
+    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+      getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
+    } else {
+      @Suppress("DEPRECATION")
+      getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+    }
+  }
+  // Extension function to handle API compatibility for getting signatures
+  private fun PackageInfo.getSignaturesCompat(): Array<Signature> {
+    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+      signingInfo.apkContentsSigners
+    } else {
+      @Suppress("DEPRECATION")
+      signatures
+    }
+  }
+  // Extension function to convert a signature to its SHA-256 hash
+  private fun Signature.toSha256(): String {
+    val digest = MessageDigest.getInstance("SHA-256")
+    return digest.digest(toByteArray())
+      .joinToString(":") { byte -> "%02x".format(byte).uppercase() }
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
