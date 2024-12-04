@@ -58,7 +58,6 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  @ReactMethod(isBlockingSynchronousMethod = true)
   fun isAppInstalled(packageName: String, signature: String): Boolean = try {
     reactApplicationContext.packageManager.getPackageInfo(packageName, 0)
     runCatching { isSignatureValid(packageName, signature) }.getOrDefault(false)
