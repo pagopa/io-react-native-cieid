@@ -63,9 +63,13 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  fun isAppInstalled(packageName: String, signature: String): Boolean = try {
+  fun isAppInstalled(packageName: String, signature: String? = null): Boolean = try {
     reactApplicationContext.packageManager.getPackageInfo(packageName, 0)
-    runCatching { isSignatureValid(packageName, signature) }.getOrDefault(false)
+    if(signature == null) {
+      true
+    } else {
+      runCatching { isSignatureValid(packageName, signature) }.getOrDefault(false)
+    }
   } catch (e: PackageManager.NameNotFoundException) {
     false
   }
@@ -74,7 +78,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   fun launchCieIdForResult(
     packageName: String,
     className: String,
-    signature: String,
+    signature: String?,
     url: String,
     resultCallback: Callback
   ) {
@@ -86,7 +90,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       }
 
       try {
-        if(!isSignatureValid(packageName, signature)) {
+        if(signature != null && !isSignatureValid(packageName, signature)) {
           onActivityResultCallback = null
           ME.CIEID_SIGNATURE_MISMATCH.invoke(resultCallback)
           return
@@ -100,6 +104,9 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
           "Exception" to anfEx.javaClass.name,
           "Message" to (anfEx.message ?: "")
         )
+      } catch (e: Exception) {
+        onActivityResultCallback = null
+        ME.UNKNOWN_EXCEPTION.invoke(resultCallback)
       }
     } ?: run {
       onActivityResultCallback = null

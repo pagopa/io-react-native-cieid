@@ -86,7 +86,7 @@ export function isCieIdAvailable(isUatEnvironment: boolean = false): boolean {
   }
   return IoReactNativeCieidModule.isAppInstalled(
     isUatEnvironment ? 'it.ipzs.cieid.collaudo' : 'it.ipzs.cieid',
-    CIEID_SIGNATURE
+    isUatEnvironment ? null : CIEID_SIGNATURE
   );
 }
 
@@ -165,7 +165,7 @@ export function openCieIdApp(
   return IoReactNativeCieidModule.launchCieIdForResult(
     cieIdPackageNameOrCustomUrl,
     'it.ipzs.cieid.BaseActivity',
-    CIEID_SIGNATURE,
+    isUatEnvironment ? null : CIEID_SIGNATURE,
     forwardUrl,
     callback
   );

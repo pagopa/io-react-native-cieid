@@ -6,7 +6,7 @@ export interface IoReactNativeCieidModule {
     /**
      * @platform android only
      */
-    signature?: string
+    signature?: string | null
   ) => boolean;
   /**
    * @platform android only
@@ -14,7 +14,7 @@ export interface IoReactNativeCieidModule {
   launchCieIdForResult: (
     packageNameOrUrlScheme: string,
     className: string,
-    signature: string,
+    signature: string | null,
     forwardUrl: string,
     callback: (result: CieIdReturnType) => void
   ) => void;
