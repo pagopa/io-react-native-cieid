@@ -87,7 +87,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
         if(!isSignatureValid(packageName, signature)) {
           onActivityResultCallback = null
           ME.CIEID_SIGNATURE_MISMATCH.invoke(resultCallback)
-          return;
+          return
         }
         activity.startActivityForResult(intent, 0)
         onActivityResultCallback = resultCallback
