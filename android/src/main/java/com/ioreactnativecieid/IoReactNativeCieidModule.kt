@@ -37,6 +37,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
     // Check if the given signature is in the SHA-256 list
     return sha256List.contains(signature)
   }
+
   // Extension function to handle API compatibility for getPackageInfo
   private fun PackageManager.getPackageInfoCompat(packageName: String): PackageInfo {
     return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
@@ -46,6 +47,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
     }
   }
+
   // Extension function to handle API compatibility for getting signatures
   private fun PackageInfo.getSignaturesCompat(): Array<Signature> {
     return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
@@ -55,6 +57,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       signatures
     }
   }
+
   // Extension function to convert a signature to its SHA-256 hash
   private fun Signature.toSha256(): String {
     val digest = MessageDigest.getInstance("SHA-256")
@@ -65,7 +68,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   @ReactMethod(isBlockingSynchronousMethod = true)
   fun isAppInstalled(packageName: String, signature: String? = null): Boolean = try {
     reactApplicationContext.packageManager.getPackageInfo(packageName, 0)
-    if(signature == null) {
+    if (signature == null) {
       true
     } else {
       runCatching { isSignatureValid(packageName, signature) }.getOrDefault(false)
@@ -90,7 +93,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       }
 
       try {
-        if(signature != null && !isSignatureValid(packageName, signature)) {
+        if (signature != null && !isSignatureValid(packageName, signature)) {
           onActivityResultCallback = null
           ME.CIEID_SIGNATURE_MISMATCH.invoke(resultCallback)
           return
