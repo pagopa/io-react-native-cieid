@@ -9,7 +9,7 @@ const LINKING_ERROR =
 const IoReactNativeCieidModule = NativeModules.IoReactNativeCieidModule
   ? NativeModules.IoReactNativeCieidModule
   : new Proxy(
-      { isAppInstalled: () => false, launchCieIdForResult: () => {} },
+      {},
       {
         get() {
           throw new Error(LINKING_ERROR);
