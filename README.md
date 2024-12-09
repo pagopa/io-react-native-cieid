@@ -49,7 +49,7 @@ const isUatInstalled = isCieIdAvailable(true);
 
 **Parameters**:
 
-- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. If `true`, it checks for the UAT environment package name.
+- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. If `true`, it checks for the UAT environment package name and, in case of `android` devices, whether to pass the app production signature or not as second parameter.
 
 **Returns**:
 
@@ -81,7 +81,7 @@ openCieIdApp('https://your-app.com/auth-callback', (result) => {
 
 - `forwardUrl` _(string)_: The `URL` that the CieID app will use to continue the authentication process.
 - `callback` _(function)_: A callback function that receives the result of the operation either success or failure.
-- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. Tells the method to use the UAT environment package name `'it.ipzs.cieid.collaudo'` instead of the production one `'it.ipzs.cieid'`, and to change the service provider IdP id from `'xx_servizicie'` to `'xx_servizicie_coll'`
+- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. Tells the method to use the UAT environment package name `'it.ipzs.cieid.collaudo'` instead of the production one `'it.ipzs.cieid'`, to change the service provider IdP id from `'xx_servizicie'` to `'xx_servizicie_coll'`, and to omit the `CieID` app signature since it's related to the `'it.ipzs.cieid'` package name.
 
 **Returns**:
 

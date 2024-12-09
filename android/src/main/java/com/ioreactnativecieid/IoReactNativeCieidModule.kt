@@ -3,7 +3,9 @@ package com.ioreactnativecieid
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.content.pm.Signature
 import android.net.Uri
 import android.util.Log
 import com.facebook.react.bridge.ActivityEventListener
@@ -11,9 +13,8 @@ import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
-import org.json.JSONObject
+import java.security.MessageDigest
 
 typealias ME = IoReactNativeCieidModule.Companion.ModuleException
 
@@ -28,10 +29,50 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
 
   override fun getName() = NAME
 
+  private fun isSignatureValid(packageName: String, signature: String): Boolean {
+    val pm = reactApplicationContext.packageManager
+    val packageInfo = pm.getPackageInfoCompat(packageName)
+    val signatures = packageInfo.getSignaturesCompat()
+    val sha256List = signatures.map { it.toSha256() }
+    // Check if the given signature is in the SHA-256 list
+    return sha256List.contains(signature)
+  }
+
+  // Extension function to handle API compatibility for getPackageInfo
+  private fun PackageManager.getPackageInfoCompat(packageName: String): PackageInfo {
+    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+      getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
+    } else {
+      @Suppress("DEPRECATION")
+      getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+    }
+  }
+
+  // Extension function to handle API compatibility for getting signatures
+  private fun PackageInfo.getSignaturesCompat(): Array<Signature> {
+    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+      signingInfo.apkContentsSigners
+    } else {
+      @Suppress("DEPRECATION")
+      signatures
+    }
+  }
+
+  // Extension function to convert a signature to its SHA-256 hash
+  private fun Signature.toSha256(): String {
+    val digest = MessageDigest.getInstance("SHA-256")
+    return digest.digest(toByteArray())
+      .joinToString(":") { byte -> "%02x".format(byte).uppercase() }
+  }
+
   @ReactMethod(isBlockingSynchronousMethod = true)
-  fun isAppInstalled(packageName: String): Boolean = try {
+  fun isAppInstalled(packageName: String, signature: String? = null): Boolean = try {
     reactApplicationContext.packageManager.getPackageInfo(packageName, 0)
-    true
+    if (signature == null) {
+      true
+    } else {
+      runCatching { isSignatureValid(packageName, signature) }.getOrDefault(false)
+    }
   } catch (e: PackageManager.NameNotFoundException) {
     false
   }
@@ -40,6 +81,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   fun launchCieIdForResult(
     packageName: String,
     className: String,
+    signature: String?,
     url: String,
     resultCallback: Callback
   ) {
@@ -51,6 +93,11 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       }
 
       try {
+        if (signature != null && !isSignatureValid(packageName, signature)) {
+          onActivityResultCallback = null
+          ME.CIEID_SIGNATURE_MISMATCH.invoke(resultCallback)
+          return
+        }
         activity.startActivityForResult(intent, 0)
         onActivityResultCallback = resultCallback
       } catch (anfEx: ActivityNotFoundException) {
@@ -60,6 +107,9 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
           "Exception" to anfEx.javaClass.name,
           "Message" to (anfEx.message ?: "")
         )
+      } catch (e: Exception) {
+        onActivityResultCallback = null
+        ME.UNKNOWN_EXCEPTION.invoke(resultCallback)
       }
     } ?: run {
       onActivityResultCallback = null
@@ -123,6 +173,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       GENERIC_ERROR(Exception("GENERIC_ERROR")),
       REACT_ACTIVITY_IS_NULL(Exception("REACT_ACTIVITY_IS_NULL")),
       CIEID_ACTIVITY_IS_NULL(Exception("CIEID_ACTIVITY_IS_NULL")),
+      CIEID_SIGNATURE_MISMATCH(Exception("CIEID_SIGNATURE_MISMATCH")),
       CIE_NOT_REGISTERED(Exception("CIE_NOT_REGISTERED")),
       AUTHENTICATION_ERROR(Exception("AUTHENTICATION_ERROR")),
       NO_SECURE_DEVICE(Exception("NO_SECURE_DEVICE")),
