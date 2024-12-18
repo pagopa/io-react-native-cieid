@@ -1,6 +1,6 @@
 # @pagopa/io-react-native-cieid 🪪
 
-A React Native bridge to integrate CieID authentication into your app. It provides a native module methods to interact with the CieID app. It's based on [cieid-ios-sdk](https://github.com/IPZSMobileTeam/cieid-ios-sdk) and [cieid-android-sdk](https://github.com/IPZSMobileTeam/cieid-android-sdk).
+A React Native bridge to integrate CieID authentication into your app. It provides a native module methods to interact with the CieID app.
 
 ## Installation
 
