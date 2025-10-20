@@ -85,7 +85,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
     url: String,
     resultCallback: Callback
   ) {
-    currentActivity?.let { activity ->
+    reactApplicationContext.currentActivity?.let { activity ->
       val intent = Intent().apply {
         setClassName(packageName, className)
         data = Uri.parse(url)
@@ -118,7 +118,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   }
 
   override fun onActivityResult(
-    activity: Activity?,
+    activity: Activity,
     requestCode: Int,
     resultCode: Int,
     data: Intent?
@@ -155,7 +155,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
     onActivityResultCallback = null
   }
 
-  override fun onNewIntent(intent: Intent?) {
+  override fun onNewIntent(intent: Intent) {
     // We do not expect add any data handling here,
     // but we add a log in case we need to debug some edge cases.
     Log.d(name, "onNewIntent has been called")
