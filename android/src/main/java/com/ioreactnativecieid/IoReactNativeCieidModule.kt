@@ -33,9 +33,9 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
     val pm = reactApplicationContext.packageManager
     val packageInfo = pm.getPackageInfoCompat(packageName)
     val signatures = packageInfo.getSignaturesCompat()
-    val sha256List = signatures.map { it.toSha256() }
+    val sha256List = signatures?.map { it.toSha256() }
     // Check if the given signature is in the SHA-256 list
-    return sha256List.contains(signature)
+    return sha256List?.contains(signature) ?: false
   }
 
   // Extension function to handle API compatibility for getPackageInfo
@@ -49,9 +49,9 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   }
 
   // Extension function to handle API compatibility for getting signatures
-  private fun PackageInfo.getSignaturesCompat(): Array<Signature> {
+  private fun PackageInfo.getSignaturesCompat(): Array<Signature>? {
     return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-      signingInfo.apkContentsSigners
+      signingInfo?.apkContentsSigners
     } else {
       @Suppress("DEPRECATION")
       signatures
