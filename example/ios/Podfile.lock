@@ -5,10 +5,10 @@ PODS:
   - FBLazyVector (0.81.0)
   - fmt (11.0.2)
   - glog (0.3.5)
-  - hermes-engine (0.81.4):
-    - hermes-engine/Pre-built (= 0.81.4)
-  - hermes-engine/Pre-built (0.81.4)
-  - pagopa-io-react-native-cieid (0.3.6):
+  - hermes-engine (0.81.0):
+    - hermes-engine/Pre-built (= 0.81.0)
+  - hermes-engine/Pre-built (0.81.0)
+  - pagopa-io-react-native-cieid (0.4.0-beta.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2671,8 +2671,8 @@ SPEC CHECKSUMS:
   FBLazyVector: a867936a67af0d09c37935a1b900a1a3c795b6d1
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
-  hermes-engine: 35c763d57c9832d0eef764316ca1c4d043581394
-  pagopa-io-react-native-cieid: 36b54fb805224fec206c3a3b410b1cc2c2e2222b
+  hermes-engine: e7491a2038f2618c8cd444ed411a6deb350a3742
+  pagopa-io-react-native-cieid: ab74ad6563014f844bf01508193916e0fb756e4e
   RCT-Folly: 59ec0ac1f2f39672a0c6e6cecdd39383b764646f
   RCTDeprecation: 0735ab4f6b3ec93a7f98187b5da74d7916e2cf4c
   RCTRequired: 8fcc7801bfc433072287b0f24a662e2816e89d0c
@@ -2744,4 +2744,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: bcf3f8450d9008acf252a27eba47c12807ed6234
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.16.2
