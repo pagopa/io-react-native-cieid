@@ -1,3 +1,11 @@
+//
+//  AppDelegate.swift
+//  IoReactNativeCieidExample
+//
+//  Created by Cristiano Tofani on 09/12/25.
+//
+
+
 import UIKit
 import React
 import React_RCTAppDelegate
