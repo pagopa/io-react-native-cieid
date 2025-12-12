@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import { NavigationContainer } from '@react-navigation/native';
 import { Stack } from './navigation';
 import { HomeScreen } from './screen/HomeScreen';
