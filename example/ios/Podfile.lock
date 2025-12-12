@@ -8,7 +8,7 @@ PODS:
   - hermes-engine (0.14.0):
     - hermes-engine/Pre-built (= 0.14.0)
   - hermes-engine/Pre-built (0.14.0)
-  - IoReactNativeCieid (0.1.0):
+  - IoReactNativeCieid (0.3.6):
     - boost
     - DoubleConversion
     - fast_float
@@ -2916,7 +2916,7 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 62c2060670400d27f74c3b363a132d91bd1bb2d4
-  IoReactNativeCieid: d0358995aeed14388d3c617e451dfd5a190d6b57
+  IoReactNativeCieid: 4caa31fb8a4e28b961f20f8bde83f8114bdf09b6
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: 2b70c6e3abe00396cefd8913efbf6a2db01a2b36
   RCTRequired: f3540eee8094231581d40c5c6d41b0f170237a81
@@ -2990,7 +2990,7 @@ SPEC CHECKSUMS:
   ReactCommon: 424cc34cf5055d69a3dcf02f3436481afb8b0f6f
   RNScreens: d821082c6dd1cb397cc0c98b026eeafaa68be479
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Yoga: 7a9f26c70daf0b08d82ec2f862e9a8872442129e
+  Yoga: 6ca93c8c13f56baeec55eb608577619b17a4d64e
 
 PODFILE CHECKSUM: 719ecf5e30959fe05c13049040fcc58bd3a0dd60
 
