@@ -1,4 +1,4 @@
-package com.ioreactnativecieid
+package com.pagopa.ioreactnativecieid
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
@@ -15,12 +15,13 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.WritableNativeMap
 import java.security.MessageDigest
+import com.facebook.react.module.annotations.ReactModule
 
 typealias ME = IoReactNativeCieidModule.Companion.ModuleException
 
+@ReactModule(name = IoReactNativeCieidModule.NAME)
 class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext), ActivityEventListener {
-
+  ActivityEventListener, NativeIoReactNativeCieidSpec(reactContext) {
   private var onActivityResultCallback: Callback? = null
 
   init {
@@ -33,9 +34,9 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
     val pm = reactApplicationContext.packageManager
     val packageInfo = pm.getPackageInfoCompat(packageName)
     val signatures = packageInfo.getSignaturesCompat()
-    val sha256List = signatures.map { it.toSha256() }
+    val sha256List = signatures?.map { it.toSha256() }
     // Check if the given signature is in the SHA-256 list
-    return sha256List.contains(signature)
+    return sha256List?.contains(signature) ?: false
   }
 
   // Extension function to handle API compatibility for getPackageInfo
@@ -49,9 +50,9 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   }
 
   // Extension function to handle API compatibility for getting signatures
-  private fun PackageInfo.getSignaturesCompat(): Array<Signature> {
+  private fun PackageInfo.getSignaturesCompat(): Array<Signature>? {
     return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-      signingInfo.apkContentsSigners
+      signingInfo?.apkContentsSigners
     } else {
       @Suppress("DEPRECATION")
       signatures
@@ -65,8 +66,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       .joinToString(":") { byte -> "%02x".format(byte).uppercase() }
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  fun isAppInstalled(packageName: String, signature: String? = null): Boolean = try {
+  override fun isAppInstalled(packageName: String, signature: String?): Boolean = try {
     reactApplicationContext.packageManager.getPackageInfo(packageName, 0)
     if (signature == null) {
       true
@@ -77,15 +77,14 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
     false
   }
 
-  @ReactMethod
-  fun launchCieIdForResult(
+  override fun launchCieIdForResult(
     packageName: String,
     className: String,
-    signature: String?,
     url: String,
-    resultCallback: Callback
+    resultCallback: Callback,
+    signature: String?
   ) {
-    currentActivity?.let { activity ->
+    reactApplicationContext.currentActivity?.let { activity ->
       val intent = Intent().apply {
         setClassName(packageName, className)
         data = Uri.parse(url)
@@ -118,7 +117,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   }
 
   override fun onActivityResult(
-    activity: Activity?,
+    activity: Activity,
     requestCode: Int,
     resultCode: Int,
     data: Intent?
@@ -155,14 +154,14 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
     onActivityResultCallback = null
   }
 
-  override fun onNewIntent(intent: Intent?) {
+  override fun onNewIntent(intent: Intent) {
     // We do not expect add any data handling here,
     // but we add a log in case we need to debug some edge cases.
     Log.d(name, "onNewIntent has been called")
   }
 
   companion object {
-    const val NAME = "IoReactNativeCieidModule"
+    const val NAME = "IoReactNativeCieid"
 
     enum class ReturnType {
       ERROR,

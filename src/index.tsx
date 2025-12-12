@@ -1,21 +1,9 @@
-import { Platform, NativeModules } from 'react-native';
+import IoReactNativeCieid, {
+  type CieIdReturnType,
+} from './NativeIoReactNativeCieid';
 
-const LINKING_ERROR =
-  `The package '@pagopa/io-react-native-cieid' doesn't seem to be linked. Make sure: \n\n` +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
+import { Platform } from 'react-native';
 
-const IoReactNativeCieidModule = NativeModules.IoReactNativeCieidModule
-  ? NativeModules.IoReactNativeCieidModule
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
 const CIEID_SIGNATURE =
   '92:D1:35:40:D4:50:F6:9F:79:2C:5F:3C:77:0A:E2:85:5B:FB:23:58:B4:47:A8:DE:06:4D:51:D0:35:8E:B6:97';
 
@@ -82,57 +70,13 @@ export type CieIdPackageNameOrCustomUrl =
  */
 export function isCieIdAvailable(isUatEnvironment: boolean = false): boolean {
   if (Platform.OS === 'ios') {
-    return IoReactNativeCieidModule.isAppInstalled('CIEID');
+    return IoReactNativeCieid.isAppInstalled('CIEID');
   }
-  return IoReactNativeCieidModule.isAppInstalled(
+  return IoReactNativeCieid.isAppInstalled(
     isUatEnvironment ? 'it.ipzs.cieid.collaudo' : 'it.ipzs.cieid',
     isUatEnvironment ? null : CIEID_SIGNATURE
   );
 }
-
-/**
- * In case of error, the {@link openCieIdApp} method returns an object whos `id` property is set to `'ERROR'`.
- * In this case the object will have a `code` property that will be one of the following error codes.
- */
-export type CieIdModuleErrorCodes =
-  | 'GENERIC_ERROR'
-  | 'REACT_ACTIVITY_IS_NULL'
-  | 'CIEID_ACTIVITY_IS_NULL'
-  | 'CIEID_SIGNATURE_MISMATCH'
-  | 'CIE_NOT_REGISTERED'
-  | 'AUTHENTICATION_ERROR'
-  | 'NO_SECURE_DEVICE'
-  | 'CIEID_EMPTY_URL_AND_ERROR_EXTRAS'
-  | 'CIEID_OPERATION_CANCEL'
-  | 'CIEID_OPERATION_NOT_SUCCESSFUL'
-  | 'UNKNOWN_EXCEPTION';
-
-/**
- * The result of the {@link openCieIdApp} method, coming from the callback,
- * is a union type of two possible results (see {@link CieIdReturnType}).
- * In case of error, the object will be the following.
- */
-export type CieIdErrorResult = {
-  id: 'ERROR';
-  code: CieIdModuleErrorCodes;
-  userInfo?: Record<string, string>;
-};
-/**
- * The result of the {@link openCieIdApp} method, coming from the callback,
- * is a union type of two possible results (see {@link CieIdReturnType}).
- * In case of success, the object will be the following.
- * The `url` property is the `URL` that the CieID app will return to the calling app,
- * after the authentication process is completed.
- */
-export type CieIdSuccessResult = {
-  id: 'URL';
-  url: string;
-};
-
-/**
- * The result of the {@link openCieIdApp} coming from the callback.
- */
-export type CieIdReturnType = CieIdErrorResult | CieIdSuccessResult;
 
 /**
  * Open the CieID app on the device.
@@ -162,11 +106,13 @@ export function openCieIdApp(
   const cieIdPackageNameOrCustomUrl = isUatEnvironment
     ? 'it.ipzs.cieid.collaudo'
     : 'it.ipzs.cieid';
-  return IoReactNativeCieidModule.launchCieIdForResult(
+  return IoReactNativeCieid.launchCieIdForResult(
     cieIdPackageNameOrCustomUrl,
     'it.ipzs.cieid.BaseActivity',
-    isUatEnvironment ? null : CIEID_SIGNATURE,
     forwardUrl,
-    callback
+    callback,
+    isUatEnvironment ? null : CIEID_SIGNATURE
   );
 }
+
+export type { CieIdReturnType } from './NativeIoReactNativeCieid';
