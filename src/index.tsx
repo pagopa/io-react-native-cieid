@@ -21,11 +21,37 @@ const CIEID_SIGNATURE =
 
 export type AndroidCiedIdPackageName =
   | 'it.ipzs.cieid'
-  | 'it.ipzs.cieid.collaudo';
+  | 'it.ipzs.cieid.collaudo'
+  | 'it.ipzs.cieid.coll';
 export type IosCieIdUrlScheme = 'CIEID://';
 export type CieIdPackageNameOrCustomUrl =
   | AndroidCiedIdPackageName
   | IosCieIdUrlScheme;
+
+/**
+ * The environment the CieID app points to.
+ *
+ * - `'production'` → `'it.ipzs.cieid'`
+ * - `'preprod'` → `'it.ipzs.cieid.collaudo'`
+ * - `'coll'` → `'it.ipzs.cieid.coll'`
+ */
+export type CieIdEnvironment = 'production' | 'preprod' | 'coll';
+
+const CIEID_PACKAGE_NAME_BY_ENVIRONMENT: Record<
+  CieIdEnvironment,
+  AndroidCiedIdPackageName
+> = {
+  production: 'it.ipzs.cieid',
+  preprod: 'it.ipzs.cieid.collaudo',
+  coll: 'it.ipzs.cieid.coll',
+};
+
+/**
+ * The production signature only applies to the `'it.ipzs.cieid'` package name,
+ * so it must be omitted for every non-production environment.
+ */
+const getCieIdSignature = (environment: CieIdEnvironment) =>
+  environment === 'production' ? CIEID_SIGNATURE : null;
 
 /**
  * Check if the CieID app is installed on the device.
@@ -45,18 +71,18 @@ export type CieIdPackageNameOrCustomUrl =
  * <queries>
  *   <package android:name="it.ipzs.cieid" />
  *   <package android:name="it.ipzs.cieid.collaudo" />
+ *   <package android:name="it.ipzs.cieid.coll" />
  * </queries>
  * ```
- * This module only exposes the package name of the CieID app for the production environment
- * and the UAT environment.
- * The package name is `'it.ipzs.cieid'` for production environment
- * and `'it.ipzs.cieid.collaudo'` for UAT environment.
+ * This module only exposes the package name of the CieID app for the supported
+ * environments (see {@link CieIdEnvironment}): `'it.ipzs.cieid'` for `'production'`,
+ * `'it.ipzs.cieid.collaudo'` for `'preprod'` and `'it.ipzs.cieid.coll'` for `'coll'`.
  *
  * **iOS:**
  * For iOS platform, the package name is not needed, but this method check if the system
  * is able to open the URL scheme of the CieID app (`CIEID://`).
  *
- * For iOS, the URL scheme is always `CIEID://` for both production and UAT environment.
+ * For iOS, the URL scheme is always `CIEID://` for every environment.
  *
  * WARNING: For this to work it is necessary to add the URL scheme to the `Info.plist`
  * file of the calling app, under the `LSApplicationQueriesSchemes` key.
@@ -74,19 +100,21 @@ export type CieIdPackageNameOrCustomUrl =
  * const isInstalled = isCieIdAvailable();
  * ```
  *
- * @param isUatEnvironment - Optional. Default is `false`.
+ * @param environment - Optional. Default is `'production'`.
  *
- * If `true`, it checks for the UAT environment package name.
+ * The environment whose package name is checked (see {@link CieIdEnvironment}).
  *
  * @returns `true` if the CieID app is installed, `false` otherwise.
  */
-export function isCieIdAvailable(isUatEnvironment: boolean = false): boolean {
+export function isCieIdAvailable(
+  environment: CieIdEnvironment = 'production'
+): boolean {
   if (Platform.OS === 'ios') {
     return IoReactNativeCieidModule.isAppInstalled('CIEID');
   }
   return IoReactNativeCieidModule.isAppInstalled(
-    isUatEnvironment ? 'it.ipzs.cieid.collaudo' : 'it.ipzs.cieid',
-    isUatEnvironment ? null : CIEID_SIGNATURE
+    CIEID_PACKAGE_NAME_BY_ENVIRONMENT[environment],
+    getCieIdSignature(environment)
   );
 }
 
@@ -146,26 +174,23 @@ export type CieIdReturnType = CieIdErrorResult | CieIdSuccessResult;
  *
  * @param forwardUrl - The `URL` that the CieID app will use to continue the authentication process.
  * @param callback - The callback function that will receive the result of the operation.
- * @param isUatEnvironment - Optional. Default is `false`.
- * Tells the method to use the UAT environment package name instead of the production one.
+ * @param environment - Optional. Default is `'production'`.
+ * Tells the method which environment package name to use (see {@link CieIdEnvironment}).
  */
 export function openCieIdApp(
   forwardUrl: string,
   callback: (result: CieIdReturnType) => void,
-  isUatEnvironment: boolean = false
+  environment: CieIdEnvironment = 'production'
 ) {
   if (Platform.OS === 'ios') {
     throw new Error(
       'openCieIdApp is not available on iOS. Use Linking.openURL instead.'
     );
   }
-  const cieIdPackageNameOrCustomUrl = isUatEnvironment
-    ? 'it.ipzs.cieid.collaudo'
-    : 'it.ipzs.cieid';
   return IoReactNativeCieidModule.launchCieIdForResult(
-    cieIdPackageNameOrCustomUrl,
+    CIEID_PACKAGE_NAME_BY_ENVIRONMENT[environment],
     'it.ipzs.cieid.BaseActivity',
-    isUatEnvironment ? null : CIEID_SIGNATURE,
+    getCieIdSignature(environment),
     forwardUrl,
     callback
   );

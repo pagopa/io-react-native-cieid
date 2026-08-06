@@ -23,16 +23,33 @@ export const NativeModule = () => (
     <View style={styles.separator} />
     <View>
       <Text style={styles.title}>
-        Test if the CieID app pointing to UAT environment is installed on the
-        device.
+        Test if the CieID app pointing to preprod environment is installed on
+        the device.
       </Text>
       <Button
         title="Press me"
         color="#f194ff"
         onPress={() =>
           Alert.alert(
-            'CIEID UAT 🧪 app is installed',
-            isCieIdAvailable(true) ? 'Yes ✅' : 'No ❌'
+            'CIEID preprod 🧪 app is installed',
+            isCieIdAvailable('preprod') ? 'Yes ✅' : 'No ❌'
+          )
+        }
+      />
+    </View>
+    <View style={styles.separator} />
+    <View>
+      <Text style={styles.title}>
+        Test if the CieID app pointing to coll environment is installed on the
+        device.
+      </Text>
+      <Button
+        title="Press me"
+        color="#9494ff"
+        onPress={() =>
+          Alert.alert(
+            'CIEID coll 🧪 app is installed',
+            isCieIdAvailable('coll') ? 'Yes ✅' : 'No ❌'
           )
         }
       />
@@ -59,7 +76,7 @@ export const NativeModule = () => (
     </View>
     <View style={styles.separator} />
     <View>
-      <Text style={styles.title}>Test CieID Opening (UAT)</Text>
+      <Text style={styles.title}>Test CieID Opening (preprod)</Text>
       <Button
         title="Press me"
         color="#ee6600"
@@ -73,7 +90,28 @@ export const NativeModule = () => (
                 console.log(result.id, result.url);
               }
             },
-            true
+            'preprod'
+          )
+        }
+      />
+    </View>
+    <View style={styles.separator} />
+    <View>
+      <Text style={styles.title}>Test CieID Opening (coll)</Text>
+      <Button
+        title="Press me"
+        color="#ee0066"
+        onPress={() =>
+          openCieIdApp(
+            'https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=...&SPLogo=...&value=e1s2',
+            (result) => {
+              if (result.id === 'ERROR') {
+                console.error(JSON.stringify(result, null, 2));
+              } else {
+                console.log(result.id, result.url);
+              }
+            },
+            'coll'
           )
         }
       />

@@ -43,13 +43,20 @@ import { isCieIdAvailable } from '@pagopa/io-react-native-cieid';
 // Check if the CieID app is installed (default is production environment)
 const isInstalled = isCieIdAvailable();
 
-// Optionally, check for UAT environment
-const isUatInstalled = isCieIdAvailable(true);
+// Optionally, check for a non-production environment
+const isPreprodInstalled = isCieIdAvailable('preprod');
+const isCollInstalled = isCieIdAvailable('coll');
 ```
 
 **Parameters**:
 
-- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. If `true`, it checks for the UAT environment package name and, in case of `android` devices, whether to pass the app production signature or not as second parameter.
+- `environment` _(`CieIdEnvironment`)_: Optional. Default is `'production'`. Selects which package name is checked on `android` devices, and whether the app production signature is passed as second parameter (it is only passed for `'production'`):
+
+| `environment`  | Android package name     | Signature check |
+| -------------- | ------------------------ | --------------- |
+| `'production'` | `it.ipzs.cieid`          | yes             |
+| `'preprod'`    | `it.ipzs.cieid.collaudo` | no              |
+| `'coll'`       | `it.ipzs.cieid.coll`     | no              |
 
 **Returns**:
 
@@ -81,7 +88,7 @@ openCieIdApp('https://your-app.com/auth-callback', (result) => {
 
 - `forwardUrl` _(string)_: The `URL` that the CieID app will use to continue the authentication process.
 - `callback` _(function)_: A callback function that receives the result of the operation either success or failure.
-- `isUatEnvironment` _(boolean)_: Optional. Default is `false`. Tells the method to use the UAT environment package name `'it.ipzs.cieid.collaudo'` instead of the production one `'it.ipzs.cieid'`, to change the service provider IdP id from `'xx_servizicie'` to `'xx_servizicie_coll'`, and to omit the `CieID` app signature since it's related to the `'it.ipzs.cieid'` package name.
+- `environment` _(`CieIdEnvironment`)_: Optional. Default is `'production'`. Tells the method which package name to use — `'it.ipzs.cieid'` for `'production'`, `'it.ipzs.cieid.collaudo'` for `'preprod'`, `'it.ipzs.cieid.coll'` for `'coll'`. For every non-production environment the `CieID` app signature is omitted, since it's related to the `'it.ipzs.cieid'` package name only; the calling app is also expected to use the `'xx_servizicie_coll'` service provider IdP id instead of `'xx_servizicie'`.
 
 **Returns**:
 
@@ -90,7 +97,7 @@ openCieIdApp('https://your-app.com/auth-callback', (result) => {
 
 #### Android:
 
-This method uses the Android package name to open the CieID app and requires the app's package visibility in the manifest. The method will automatically use `'it.ipzs.cieid'` for the production environment and `'it.ipzs.cieid.collaudo'` for UAT.
+This method uses the Android package name to open the CieID app and requires the app's package visibility in the manifest. The method will automatically pick the package name matching the `environment` parameter: `'it.ipzs.cieid'` for `'production'`, `'it.ipzs.cieid.collaudo'` for `'preprod'` and `'it.ipzs.cieid.coll'` for `'coll'`.
 
 #### iOS:
 
@@ -220,7 +227,7 @@ Inside the sample app, you can find a complete example of how to handle the CieI
               setAuthenticatedUrl(result.url);
             }
           },
-          isUat
+          environment
         );
       }
       return false;

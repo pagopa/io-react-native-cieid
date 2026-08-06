@@ -3653,6 +3653,7 @@ __metadata:
   resolution: "@pagopa/io-react-native-cieid@workspace:."
   dependencies:
     "@commitlint/config-conventional": ^17.0.2
+    "@react-native/babel-preset": 0.81.5
     "@react-native/eslint-config": 0.81.0
     "@release-it/conventional-changelog": ^5.0.0
     "@types/jest": ^29.5.5
