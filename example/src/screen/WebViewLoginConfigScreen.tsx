@@ -1,10 +1,17 @@
 import * as React from 'react';
 
 import { Button, SafeAreaView, Switch, Text, View } from 'react-native';
+import type { CieIdEnvironment } from '@pagopa/io-react-native-cieid';
 import type { NavigatorStackParamList } from '../navigation';
 import { styles } from '../common/style';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+const environments: ReadonlyArray<CieIdEnvironment> = [
+  'production',
+  'preprod',
+  'coll',
+];
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   NavigatorStackParamList,
@@ -18,9 +25,8 @@ export const WebViewLoginConfig: React.FC<HomeScreenProps> = () => {
   const [isSpidLevel3Enabled, setIsSpidLevel3Enabled] = React.useState(false);
   const toggleSpidLevel3Switch = () =>
     setIsSpidLevel3Enabled((previousState) => !previousState);
-  const [isUatEnabled, setIsUatEnabled] = React.useState(false);
-  const toggleUatSwitch = () =>
-    setIsUatEnabled((previousState) => !previousState);
+  const [environment, setEnvironment] =
+    React.useState<CieIdEnvironment>('production');
 
   const navigation =
     useNavigation<
@@ -44,17 +50,23 @@ export const WebViewLoginConfig: React.FC<HomeScreenProps> = () => {
         />
       </View>
       <View style={styles.separator} />
-      <View style={styles.switchContainer}>
-        <Text style={styles.title}>
-          Set UAT environment (default is production)
-        </Text>
-        <Switch value={isUatEnabled} onValueChange={toggleUatSwitch} />
+      <View>
+        <Text style={styles.title}>Environment (default is production)</Text>
+        {environments.map((env) => (
+          <View key={env} style={styles.switchContainer}>
+            <Text style={styles.title}>{env}</Text>
+            <Switch
+              value={environment === env}
+              onValueChange={() => setEnvironment(env)}
+            />
+          </View>
+        ))}
       </View>
       <View style={styles.separator} />
       <View>
         <Text
           style={styles.title}
-        >{`Test CieID ${isUatEnabled ? 'UAT' : 'production'} login with ${isSpidLevel3Enabled ? 'L3' : 'L2'}`}</Text>
+        >{`Test CieID ${environment} login with ${isSpidLevel3Enabled ? 'L3' : 'L2'}`}</Text>
         <Button
           title="Test CieID Login"
           // nice fluo color
@@ -64,7 +76,7 @@ export const WebViewLoginConfig: React.FC<HomeScreenProps> = () => {
               name: 'WebViewLogin',
               params: {
                 spidLevel: isSpidLevel3Enabled ? 'SpidL3' : 'SpidL2',
-                isUat: isUatEnabled,
+                environment,
               },
             })
           }

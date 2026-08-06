@@ -1,6 +1,9 @@
 import * as React from 'react';
 
-import { openCieIdApp } from '@pagopa/io-react-native-cieid';
+import {
+  openCieIdApp,
+  type CieIdEnvironment,
+} from '@pagopa/io-react-native-cieid';
 import { Alert, Linking, Platform, SafeAreaView } from 'react-native';
 import WebView, { type WebViewNavigation } from 'react-native-webview';
 import type { WebViewSource } from 'react-native-webview/lib/WebViewTypes';
@@ -17,7 +20,7 @@ type SpidLevel = 'SpidL2' | 'SpidL3';
 
 export type WebViewLoginNavigationProps = {
   spidLevel: SpidLevel;
-  isUat: boolean;
+  environment: CieIdEnvironment;
 };
 
 const iOSUserAgent =
@@ -75,11 +78,19 @@ export const WebViewLogin = () => {
     >();
 
   const route = useRoute<RouteProp<NavigatorStackParamList, 'WebViewLogin'>>();
-  const { spidLevel, isUat } = route.params;
-  console.log('<-- ^^ --> spidLevel: ', spidLevel, 'isUat: ', isUat);
+  const { spidLevel, environment } = route.params;
+  console.log(
+    '<-- ^^ --> spidLevel: ',
+    spidLevel,
+    'environment: ',
+    environment
+  );
   const filledServiceProviderUrl = serviceProviderUrl
     .replace('{SPID_LEVEL}', spidLevel)
-    .replace('{ID}', isUat ? 'xx_servizicie_coll' : 'xx_servizicie');
+    .replace(
+      '{ID}',
+      environment === 'production' ? 'xx_servizicie' : 'xx_servizicie_coll'
+    );
 
   const handleOnShouldStartLoadWithRequest = (
     event: WebViewNavigation
@@ -134,7 +145,7 @@ export const WebViewLogin = () => {
               setAuthenticatedUrl(result.url);
             }
           },
-          isUat
+          environment
         );
       }
       return false;
