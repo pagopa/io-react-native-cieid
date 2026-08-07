@@ -15,10 +15,9 @@ jobs:
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: .nvmrc
-          registry-url: 'https://registry.npmjs.org'
       - name: Install npm 11
         run: npm install -g npm@11.7.0
       - name: Install dependencies and build with builder bob
         run: yarn install --frozen-lockfile
       - name: Publish package on NPM 📦
-        run: npm publish
+        run: npm publish --provenance --access public
