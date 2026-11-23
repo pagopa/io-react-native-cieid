@@ -136,6 +136,30 @@ export type CieIdModuleErrorCodes =
   | 'UNKNOWN_EXCEPTION';
 
 /**
+ * Android CieID error detail returned in `error_message`.
+ */
+export type CieIdErrorMessage =
+  | 'IDP_HTTP_ERROR'
+  | 'IDP_EMPTY_RESPONSE'
+  | 'IDP_INVALID_CODE'
+  | 'IDP_RESPONSE_PARSING_ERROR'
+  | 'CERTIFICATE_REVOKED'
+  | 'CERTIFICATE_EXPIRED'
+  | 'USER_CANCELLED_AFTER_WRONG_PIN'
+  | 'CIE_NOT_REGISTERED'
+  | 'USER_CANCELLED'
+  | 'USER_CANCELLED_DURING_NFC'
+  | 'NFC_TIMEOUT'
+  | 'NFC_READ_ERROR'
+  | 'NOT_A_CIE'
+  | 'NO_INTERNET_CONNECTION'
+  | 'CARD_PIN_LOCKED'
+  | 'CARD_PUK_LOCKED'
+  | 'AUTHENTICATION_FAILED'
+  | 'DEVICE_NOT_SECURE'
+  | 'INVALID_REQUEST';
+
+/**
  * The result of the {@link openCieIdApp} method, coming from the callback,
  * is a union type of two possible results (see {@link CieIdReturnType}).
  * In case of error, the object will be the following.
@@ -143,7 +167,8 @@ export type CieIdModuleErrorCodes =
 export type CieIdErrorResult = {
   id: 'ERROR';
   code: CieIdModuleErrorCodes;
-  userInfo?: Record<string, string>;
+  userInfo: Record<string, any> | null;
+  error_message?: CieIdErrorMessage | null;
 };
 /**
  * The result of the {@link openCieIdApp} method, coming from the callback,

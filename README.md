@@ -78,7 +78,9 @@ openCieIdApp('https://your-app.com/auth-callback', (result) => {
   } else if (result.id === 'ERROR') {
     console.error(
       'Authentication on CieID failed with error code:',
-      result.code
+      result.code,
+      'detail:',
+      result.error_message
     );
   }
 });
@@ -98,6 +100,34 @@ openCieIdApp('https://your-app.com/auth-callback', (result) => {
 #### Android:
 
 This method uses the Android package name to open the CieID app and requires the app's package visibility in the manifest. The method will automatically pick the package name matching the `environment` parameter: `'it.ipzs.cieid'` for `'production'`, `'it.ipzs.cieid.collaudo'` for `'preprod'` and `'it.ipzs.cieid.coll'` for `'coll'`.
+
+When CieID returns an Android `error_message` extra, it is included as `result.error_message` for both `RESULT_OK` and `RESULT_CANCELED` responses. `USER_CANCELLED*` values identify voluntary cancellations; `IDP_*` values are service errors and `CERTIFICATE_*` / `CARD_*` values concern the card or certificate.
+
+Possible `error_message` values:
+
+| Value | Level | When it occurs | Recommended handling |
+| --- | --- | --- | --- |
+| `IDP_HTTP_ERROR` | L3 | The Identity Provider returned an HTTP error status. | Treat as a temporary service error and suggest trying again later. |
+| `IDP_EMPTY_RESPONSE` | L3 | The Identity Provider returned an empty response. | Suggest retrying; if it persists, report it to IPZS with the date and time. |
+| `IDP_INVALID_CODE` | L3 | The Identity Provider response does not contain an authentication code in the expected format. | This is not user-dependent; report it to IPZS with the date, time, and requested level. |
+| `IDP_RESPONSE_PARSING_ERROR` | L3 | The Identity Provider response could not be parsed. | Handle as `IDP_INVALID_CODE`. |
+| `CERTIFICATE_REVOKED` | L3 | The CIE authentication certificate has been revoked. | Do not suggest retrying; tell the user the card is no longer valid for authentication and to contact their municipality. |
+| `CERTIFICATE_EXPIRED` | L3 | The CIE authentication certificate has expired. | Do not suggest retrying; inform the user that the card has expired. |
+| `USER_CANCELLED_AFTER_WRONG_PIN` | L3 | The user entered an incorrect PIN and chose to cancel instead of retrying. | Treat as a cancellation, not an error; the user may be reminded to check their PIN. |
+| `CIE_NOT_REGISTERED` | L3 | L3 authentication was requested, but no CIE is registered in the CieID app. | Ask the user to register their card in CieID, then retry. |
+| `USER_CANCELLED` | L1, L2, L3 | The user went back or cancelled without seeing an error. | Treat as voluntary cancellation and return to the access-method selection. |
+| `USER_CANCELLED_DURING_NFC` | L3 | The user went back during card reading. | Treat as voluntary cancellation. |
+| `NFC_TIMEOUT` | L3 | The card was not presented in time and the user cancelled. | Suggest retrying with the card held against the phone. |
+| `NFC_READ_ERROR` | L3 | Card reading was interrupted or unsuccessful, and the user exited. | Suggest retrying without moving the card during reading. |
+| `NOT_A_CIE` | L3 | A non-CIE card was presented, and the user exited. | Remind the user to use their Electronic Identity Card (CIE). |
+| `NO_INTERNET_CONNECTION` | L1, L2, L3 | The connection to the Identity Provider was unavailable or timed out, and the user exited. | Ask the user to check their connection and retry. |
+| `CARD_PIN_LOCKED` | L3 | The CIE PIN is locked. | Tell the user they can unblock the PIN with their PUK in the CieID app. |
+| `CARD_PUK_LOCKED` | L3 | The CIE PUK is also locked. | Tell the user to contact their municipality. |
+| `AUTHENTICATION_FAILED` | L1, L2 | Authentication with CieID credentials failed. | Suggest retrying or using another access method. |
+| `DEVICE_NOT_SECURE` | L1, L2, L3 | CieID detected a modified (rooted) device and cannot proceed. | Do not suggest retrying on the same device. |
+| `INVALID_REQUEST` | L1, L2, L3 | The URL is invalid or not accepted by CieID. For L3, only the `OpenApp` URL is accepted. | Treat as an integration error and check the URL passed in the Intent. |
+
+If `error_message` is absent, CieID may have been terminated by the system or may be an older version; handle it as a generic cancellation. Successful responses do not include this field.
 
 #### iOS:
 
