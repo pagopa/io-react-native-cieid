@@ -127,7 +127,7 @@ Possible `message` values:
 | `DEVICE_NOT_SECURE` | L1, L2, L3 | CieID detected a modified (rooted) device and cannot proceed. | Do not suggest retrying on the same device. |
 | `INVALID_REQUEST` | L1, L2, L3 | The URL is invalid or not accepted by CieID. For L3, only the `OpenApp` URL is accepted. | Treat as an integration error and check the URL passed in the Intent. |
 
-If `message` is absent, CieID may have been terminated by the system or may be an older version; handle it as a generic cancellation. Successful responses do not include this field.
+For `CIEID_OPERATION_CANCEL` results without `message`, handle the result as a generic cancellation; CieID may have been terminated by the system or may be an older version. For other error results, continue to handle `result.code` even when `message` is absent. Successful responses do not include this field.
 
 #### iOS:
 
