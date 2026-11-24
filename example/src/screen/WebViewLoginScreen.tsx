@@ -34,7 +34,7 @@ const originSchemasWhiteList = ['https://*', 'iologin://*'];
 
 // Set servie provider URL as pattern string for entityID=xx_servizicie and authLevel=SpidL2
 const serviceProviderUrl =
-  'https://app-backend.io.italia.it/login?entityID={ID}&authLevel={SPID_LEVEL}';
+  'https://app-backend.io.italia.it/api/auth/v1/login?entityID={ID}&authLevel={SPID_LEVEL}';
 
 export const WebViewLogin = () => {
   React.useEffect(() => {
