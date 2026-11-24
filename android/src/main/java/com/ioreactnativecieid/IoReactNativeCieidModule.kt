@@ -133,7 +133,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
           })
         } else {
           val errorId = data?.getIntExtra(ReturnType.ERROR.toString(), 0)
-          val errorMessage = data?.getStringExtra("error_message")
+          val errorMessage = data?.getStringExtra(ReturnType.ERROR_MESSAGE.toString())
           val errorMap = mapOf(
             RedirectionError.GENERIC_ERROR.code to ME.GENERIC_ERROR,
             RedirectionError.CIE_NOT_REGISTERED.code to ME.CIE_NOT_REGISTERED,
@@ -149,7 +149,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       }
 
       Activity.RESULT_CANCELED -> {
-        val errorMessage = data?.getStringExtra("error_message")
+        val errorMessage = data?.getStringExtra(ReturnType.ERROR_MESSAGE.toString())
         ME.CIEID_OPERATION_CANCEL.invoke(
           onActivityResultCallback,
           errorMessage = errorMessage
@@ -172,9 +172,12 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   companion object {
     const val NAME = "IoReactNativeCieidModule"
 
-    enum class ReturnType {
-      ERROR,
-      URL
+    enum class ReturnType(private val key: String) {
+      ERROR("ERROR"),
+      URL("URL"),
+      ERROR_MESSAGE("error_message");
+
+      override fun toString() = key
     }
 
     enum class ModuleException(private val ex: Exception) {
