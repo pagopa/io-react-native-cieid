@@ -80,7 +80,7 @@ openCieIdApp('https://your-app.com/auth-callback', (result) => {
       'Authentication on CieID failed with error code:',
       result.code,
       'detail:',
-      result.error_message
+      result.message
     );
   }
 });
@@ -101,9 +101,9 @@ openCieIdApp('https://your-app.com/auth-callback', (result) => {
 
 This method uses the Android package name to open the CieID app and requires the app's package visibility in the manifest. The method will automatically pick the package name matching the `environment` parameter: `'it.ipzs.cieid'` for `'production'`, `'it.ipzs.cieid.collaudo'` for `'preprod'` and `'it.ipzs.cieid.coll'` for `'coll'`.
 
-When CieID returns an Android `error_message` extra, it is included as `result.error_message` for both `RESULT_OK` and `RESULT_CANCELED` responses. `USER_CANCELLED*` values identify voluntary cancellations; `IDP_*` values are service errors and `CERTIFICATE_*` / `CARD_*` values concern the card or certificate.
+When CieID returns an Android `error_message` extra, it is included as `result.message` for both `RESULT_OK` and `RESULT_CANCELED` responses. `USER_CANCELLED*` values identify voluntary cancellations; `IDP_*` values are service errors and `CERTIFICATE_*` / `CARD_*` values concern the card or certificate.
 
-Possible `error_message` values:
+Possible `message` values:
 
 | Value | Level | When it occurs | Recommended handling |
 | --- | --- | --- | --- |
@@ -127,7 +127,7 @@ Possible `error_message` values:
 | `DEVICE_NOT_SECURE` | L1, L2, L3 | CieID detected a modified (rooted) device and cannot proceed. | Do not suggest retrying on the same device. |
 | `INVALID_REQUEST` | L1, L2, L3 | The URL is invalid or not accepted by CieID. For L3, only the `OpenApp` URL is accepted. | Treat as an integration error and check the URL passed in the Intent. |
 
-If `error_message` is absent, CieID may have been terminated by the system or may be an older version; handle it as a generic cancellation. Successful responses do not include this field.
+If `message` is absent, CieID may have been terminated by the system or may be an older version; handle it as a generic cancellation. Successful responses do not include this field.
 
 #### iOS:
 

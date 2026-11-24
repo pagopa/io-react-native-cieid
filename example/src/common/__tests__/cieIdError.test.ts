@@ -20,7 +20,7 @@ describe('showCieIdError', () => {
       id: 'ERROR' as const,
       code: 'CIEID_OPERATION_CANCEL' as const,
       userInfo: { detail: 'Example' },
-      error_message: 'NFC_READ_ERROR' as const,
+      message: 'NFC_READ_ERROR' as const,
     };
     showCieIdError(error, onDismiss);
 
@@ -31,7 +31,7 @@ describe('showCieIdError', () => {
     );
   });
 
-  it('displays an error without the optional error_message', () => {
+  it('displays an error without the optional message', () => {
     const error = {
       id: 'ERROR' as const,
       code: 'CIEID_OPERATION_CANCEL' as const,

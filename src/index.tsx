@@ -136,7 +136,7 @@ export type CieIdModuleErrorCodes =
   | 'UNKNOWN_EXCEPTION';
 
 /**
- * Android CieID error detail returned in `error_message`.
+ * Android CieID error detail returned in `message`.
  */
 export type CieIdErrorMessage =
   | 'IDP_HTTP_ERROR'
@@ -168,7 +168,7 @@ export type CieIdErrorResult = {
   id: 'ERROR';
   code: CieIdModuleErrorCodes;
   userInfo: Record<string, any> | null;
-  error_message?: CieIdErrorMessage | null;
+  message?: CieIdErrorMessage | null;
 };
 /**
  * The result of the {@link openCieIdApp} method, coming from the callback,

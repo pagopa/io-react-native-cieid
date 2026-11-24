@@ -202,7 +202,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
           putString("id", ReturnType.ERROR.toString())
           putString("code", ex.message ?: "UNKNOWN")
           putMap("userInfo", writableMap)
-          errorMessage?.let { putString("error_message", it) }
+          errorMessage?.let { putString("message", it) }
         }
         callback?.invoke(returnObject)
       }
