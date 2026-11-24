@@ -15,6 +15,7 @@ import {
 import { styles } from '../common/style';
 import type { NavigatorStackParamList } from '../navigation';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { showCieIdError } from '../common/cieIdError';
 
 type SpidLevel = 'SpidL2' | 'SpidL3';
 
@@ -138,8 +139,7 @@ export const WebViewLogin = () => {
           url,
           (result) => {
             if (result.id === 'ERROR') {
-              console.error('^--^ -->', JSON.stringify(result, null, 2));
-              navigation.goBack();
+              showCieIdError(result, () => navigation.goBack());
             } else {
               console.log('^--^ -->', result.id, result.url);
               setAuthenticatedUrl(result.url);

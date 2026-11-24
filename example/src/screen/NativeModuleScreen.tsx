@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Alert, Button, SafeAreaView, Text, View } from 'react-native';
 import { isCieIdAvailable, openCieIdApp } from '@pagopa/io-react-native-cieid';
 import { styles } from '../common/style';
+import { showCieIdError } from '../common/cieIdError';
 
 export const NativeModule = () => (
   <SafeAreaView style={styles.container}>
@@ -65,7 +66,7 @@ export const NativeModule = () => (
             'https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=...&SPLogo=...&value=e1s2',
             (result) => {
               if (result.id === 'ERROR') {
-                console.error(JSON.stringify(result, null, 2));
+                showCieIdError(result);
               } else {
                 console.log(result.id, result.url);
               }
@@ -85,7 +86,7 @@ export const NativeModule = () => (
             'https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=...&SPLogo=...&value=e1s2',
             (result) => {
               if (result.id === 'ERROR') {
-                console.error(JSON.stringify(result, null, 2));
+                showCieIdError(result);
               } else {
                 console.log(result.id, result.url);
               }
@@ -106,7 +107,7 @@ export const NativeModule = () => (
             'https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=...&SPLogo=...&value=e1s2',
             (result) => {
               if (result.id === 'ERROR') {
-                console.error(JSON.stringify(result, null, 2));
+                showCieIdError(result);
               } else {
                 console.log(result.id, result.url);
               }
