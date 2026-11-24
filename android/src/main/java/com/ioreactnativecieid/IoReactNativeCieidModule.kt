@@ -133,19 +133,27 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
           })
         } else {
           val errorId = data?.getIntExtra(ReturnType.ERROR.toString(), 0)
+          val errorMessage = data?.getStringExtra(ReturnType.ERROR_MESSAGE.toString())
           val errorMap = mapOf(
             RedirectionError.GENERIC_ERROR.code to ME.GENERIC_ERROR,
             RedirectionError.CIE_NOT_REGISTERED.code to ME.CIE_NOT_REGISTERED,
             RedirectionError.AUTHENTICATION_ERROR.code to ME.AUTHENTICATION_ERROR,
             RedirectionError.NO_SECURE_DEVICE.code to ME.NO_SECURE_DEVICE
           )
-          errorMap[errorId]?.invoke(onActivityResultCallback)
-            ?: ME.CIEID_EMPTY_URL_AND_ERROR_EXTRAS.invoke(onActivityResultCallback)
+          errorMap[errorId]?.invoke(onActivityResultCallback, errorMessage = errorMessage)
+            ?: ME.CIEID_EMPTY_URL_AND_ERROR_EXTRAS.invoke(
+              onActivityResultCallback,
+              errorMessage = errorMessage
+            )
         }
       }
 
       Activity.RESULT_CANCELED -> {
-        ME.CIEID_OPERATION_CANCEL.invoke(onActivityResultCallback)
+        val errorMessage = data?.getStringExtra(ReturnType.ERROR_MESSAGE.toString())
+        ME.CIEID_OPERATION_CANCEL.invoke(
+          onActivityResultCallback,
+          errorMessage = errorMessage
+        )
       }
 
       else -> {
@@ -164,9 +172,12 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
   companion object {
     const val NAME = "IoReactNativeCieidModule"
 
-    enum class ReturnType {
-      ERROR,
-      URL
+    enum class ReturnType(private val key: String) {
+      ERROR("ERROR"),
+      URL("URL"),
+      ERROR_MESSAGE("error_message");
+
+      override fun toString() = key
     }
 
     enum class ModuleException(private val ex: Exception) {
@@ -182,7 +193,11 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
       CIEID_OPERATION_NOT_SUCCESSFUL(Exception("CIEID_OPERATION_NOT_SUCCESSFUL")),
       UNKNOWN_EXCEPTION(Exception("UNKNOWN_EXCEPTION"));
 
-      fun invoke(callback: Callback?, vararg args: Pair<String, String>) {
+      fun invoke(
+        callback: Callback?,
+        vararg args: Pair<String, String>,
+        errorMessage: String? = null
+      ) {
         val writableMap = WritableNativeMap().apply {
           args.forEach { putString(it.first, it.second) }
         }
@@ -190,6 +205,7 @@ class IoReactNativeCieidModule(reactContext: ReactApplicationContext) :
           putString("id", ReturnType.ERROR.toString())
           putString("code", ex.message ?: "UNKNOWN")
           putMap("userInfo", writableMap)
+          errorMessage?.let { putString("message", it) }
         }
         callback?.invoke(returnObject)
       }

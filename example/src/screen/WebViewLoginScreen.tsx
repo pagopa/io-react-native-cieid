@@ -15,6 +15,7 @@ import {
 import { styles } from '../common/style';
 import type { NavigatorStackParamList } from '../navigation';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { showCieIdError } from '../common/cieIdError';
 
 type SpidLevel = 'SpidL2' | 'SpidL3';
 
@@ -34,7 +35,7 @@ const originSchemasWhiteList = ['https://*', 'iologin://*'];
 
 // Set servie provider URL as pattern string for entityID=xx_servizicie and authLevel=SpidL2
 const serviceProviderUrl =
-  'https://app-backend.io.italia.it/login?entityID={ID}&authLevel={SPID_LEVEL}';
+  'https://app-backend.io.italia.it/api/auth/v1/login?entityID={ID}&authLevel={SPID_LEVEL}';
 
 export const WebViewLogin = () => {
   React.useEffect(() => {
@@ -138,8 +139,7 @@ export const WebViewLogin = () => {
           url,
           (result) => {
             if (result.id === 'ERROR') {
-              console.error('^--^ -->', JSON.stringify(result, null, 2));
-              navigation.goBack();
+              showCieIdError(result, () => navigation.goBack());
             } else {
               console.log('^--^ -->', result.id, result.url);
               setAuthenticatedUrl(result.url);

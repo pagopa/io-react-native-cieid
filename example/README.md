@@ -62,7 +62,7 @@ sequenceDiagram
 
     C->>App: Start CieID identification
 
-    App->>WV: GET https://app-backend.io.italia.it/login?entityID=xx_servizicie&authLevel=SpidL2
+    App->>WV: GET https://app-backend.io.italia.it/api/auth/v1/login?entityID=xx_servizicie&authLevel=SpidL2
     WV-->>CIEIDBE: https://idserver.servizicie.interno.gov.it/idp/profile/SAML2/Redirect/SSO?SAMLRequest=[...]]
     WV-->>WV: Wait for `livello2` query param
     CIEIDBE-->>WV: https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2
@@ -99,7 +99,7 @@ sequenceDiagram
     participant OS as iOS
 
     C->>App: Start CieID identification
-    App->>WV: GET https://app-backend.io.italia.it/login?entityID=xx_servizicie&authLevel=SpidL2
+    App->>WV: GET https://app-backend.io.italia.it/api/auth/v1/login?entityID=xx_servizicie&authLevel=SpidL2
     WV-->>CIEIDBE: https://idserver.servizicie.interno.gov.it/idp/profile/SAML2/Redirect/SSO?SAMLRequest=[...]]
     WV-->>WV: Wait for `livello2` query param
     CIEIDBE-->>WV: https://idserver.servizicie.interno.gov.it/idp/login/livello2?opId=...&challenge=...&level=2&SPName=https%3A%2F%2Fapp-backend.io.italia.it&SPLogo=...&value=e1s2
